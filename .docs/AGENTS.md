@@ -42,6 +42,16 @@ npx skills add <fonte> -a opencode
 
 `skills-lock.json` rastreia apenas as skills do ecossistema. As skills próprias do projeto (`create-spec`, `feature-concept`, `implement-me`, `refine-spec`) não estão no lock — são versionadas junto com `.agents/skills/`.
 
+## Comandos do projeto
+
+Comandos do OpenCode vivem em [`.opencode/commands/`](../.opencode/commands/).
+
+| Comando            | Quando usar                                                                          |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| `/commit-and-push` | Fechar uma unidade de trabalho: lê o diff, gera a mensagem, commita e faz push       |
+
+Toda execução de spec termina com `/commit-and-push`. O comando segue Conventional Commits e inclui o trailer `Co-authored-by: opencode <noreply@opencode.ai>`.
+
 ## Regras não negociáveis
 
 1. **Não invente o que existe.** Verificar `package.json`, `turbo.json` e o código antes de afirmar que uma ferramenta está ou não na stack. A confusão entre _estado atual_ e _estado-alvo_ já causou divergência entre spec e código neste repositório.

@@ -98,10 +98,20 @@ Apresente o resumo final conforme `.docs/RULES.md`:
 | Verificação        | Resultado dos comandos de QA          |
 | Próximos passos    | O que pode ser melhorado ou falta     |
 
+### 7. Publicação
+
+Com a entrega apresentada, execute o comando `/commit-and-push`:
+
+1. Ele analisa o diff, gera a mensagem em Conventional Commits, commita e faz push
+2. Se a spec tiver etapas independentes, rode ao final de cada etapa; caso contrário, ao final da spec
+3. O trailer `Co-authored-by: opencode <noreply@opencode.ai>` é obrigatório e o comando já o inclui
+4. Sem remote configurado, informe o usuário em vez de deixar o push falhar silenciosamente
+
 ## Regras
 
 - **Nunca pule o feature-concept** — Mesmo que a spec pareça clara, sempre refine
 - **Nunca implemente sem plano aprovado** — O usuário deve confirmar o plano antes do código
+- **Toda spec termina publicada** — a última ação é `/commit-and-push`; nada fica só no working tree
 - **Seja transparente** — Se encontrar problemas durante a implementação, comunique
 - **Mantenha o usuário informado** — Reporte progresso a cada etapa significativa
 - **Documente decisões** — Se tomar decisões não previstas na spec, registre no plano

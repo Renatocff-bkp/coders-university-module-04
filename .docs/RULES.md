@@ -40,6 +40,8 @@ Não omita nenhum desses itens. Se algo não se aplica, escreva "n/a" com o moti
 - Formato: `type(scope): descrição` ([Conventional Commits](https://conventionalcommits.org))
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
 - A mensagem é validada por `commitlint` (`@commitlint/config-conventional`) no hook `commit-msg`; commit fora do padrão é bloqueado. Configuração em [`commitlint.config.mjs`](../commitlint.config.mjs)
+- Ao final de cada spec, rode o comando `/commit-and-push` (analisa o diff, gera a mensagem, commita e publica)
+- Commits produzidos por agente carregam `Co-authored-by: opencode <noreply@opencode.ai>`
 - Um commit por mudança lógica
 - Não misture feature com refactor no mesmo commit
 - Corpos com ADR referenciado quando a mudança for arquitetural
