@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* Os componentes vivem fora deste arquivo: sem esta diretiva o Tailwind nao
+   enxerga as classes usadas em `src/components`. O caminho e relativo ao CSS. */
+@source "../components/**/*.{ts,tsx}";
+
+/* DESIGN.md define tema claro exclusivo. Sem dark mode, o `dark:` das variantes
+   do shadcn nunca deve casar, entao ele so responde a uma classe `.dark`. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Paleta de DESIGN.md. Sao cores de superficie e acento: nenhuma delas atinge
+ * 4.5:1 sobre branco e por isso nenhuma e usada como cor de texto. Os tokens
+ * semanticos abaixo sao as versoes derivadas, com contraste verificado.
+ */
+:root {
+  --powder-petal: #eddcd2;
+  --linen: #fff1e6;
+  --soft-blush: #fde2e4;
+  --petal-frost: #fad2e1;
+  --light-cyan: #c5dedd;
+  --mint-cream: #dbe7e4;
+  --parchment: #f0efeb;
+  --alice-blue: #d6e2e9;
+  --pale-sky: #bcd4e6;
+  --powder-blue: #99c1de;
+}
+
+/*
+ * Tokens semanticos. Cada par texto/fundo abaixo foi medido:
+ *
+ *   foreground sobre background      15,52:1
+ *   primary-foreground sobre primary  7,96:1
+ *   muted-foreground sobre muted      6,72:1
+ *   secondary-foreground s/ secondary12,24:1
+ *   accent-foreground sobre accent    12,70:1
+ *   destructive-foreground s/ destr.  6,47:1
+ *   primary sobre background           7,96:1  (foco e link)
+ *   border/input sobre background     3,29:1  (WCAG 1.4.11)
+ *
+ * `--primary` e `--border` sao derivados da paleta, nao tokens originais:
+ * powder-blue com texto branco daria 1,9:1, e alice-blue com 3:1 nao atende
+ * a borda de controles interativos. Ver ADR 0002.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: #ffffff;
+  --foreground: #242424;
+
+  --card: #ffffff;
+  --card-foreground: #242424;
+
+  --popover: #ffffff;
+  --popover-foreground: #242424;
+
+  /* powder-blue escurecido: mantem o matiz e passa a servir de fundo de CTA */
+  --primary: #1f5673;
+  --primary-foreground: #ffffff;
+
+  --secondary: #dbe7e4; /* mint-cream */
+  --secondary-foreground: #242424;
+
+  --muted: #f0efeb; /* parchment */
+  --muted-foreground: #52525b;
+
+  --accent: #fde2e4; /* soft-blush */
+  --accent-foreground: #242424;
+
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+
+  /* alice-blue escurecido: borda de controle interativo exige 3:1 */
+  --border: #7392a4;
+  --input: #7392a4;
+
+  --ring: #1f5673;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-powder-petal: var(--powder-petal);
+  --color-linen: var(--linen);
+  --color-soft-blush: var(--soft-blush);
+  --color-petal-frost: var(--petal-frost);
+  --color-light-cyan: var(--light-cyan);
+  --color-mint-cream: var(--mint-cream);
+  --color-parchment: var(--parchment);
+  --color-alice-blue: var(--alice-blue);
+  --color-pale-sky: var(--pale-sky);
+  --color-powder-blue: var(--powder-blue);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

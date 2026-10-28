@@ -1,102 +1,180 @@
-import Image, { type ImageProps } from "next/image";
-import { Button } from "@repo/ui/button";
-import styles from "./page.module.css";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@repo/ui";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
+const paleta = [
+  { token: "--powder-petal", nome: "powder-petal", classe: "bg-powder-petal" },
+  { token: "--linen", nome: "linen", classe: "bg-linen" },
+  { token: "--soft-blush", nome: "soft-blush", classe: "bg-soft-blush" },
+  { token: "--petal-frost", nome: "petal-frost", classe: "bg-petal-frost" },
+  { token: "--light-cyan", nome: "light-cyan", classe: "bg-light-cyan" },
+  { token: "--mint-cream", nome: "mint-cream", classe: "bg-mint-cream" },
+  { token: "--parchment", nome: "parchment", classe: "bg-parchment" },
+  { token: "--alice-blue", nome: "alice-blue", classe: "bg-alice-blue" },
+  { token: "--pale-sky", nome: "pale-sky", classe: "bg-pale-sky" },
+  { token: "--powder-blue", nome: "powder-blue", classe: "bg-powder-blue" },
+];
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
+const tokensSemanticos = [
+  { token: "--background", classe: "bg-background" },
+  { token: "--foreground", classe: "bg-foreground" },
+  { token: "--primary", classe: "bg-primary" },
+  { token: "--secondary", classe: "bg-secondary" },
+  { token: "--muted", classe: "bg-muted" },
+  { token: "--accent", classe: "bg-accent" },
+  { token: "--destructive", classe: "bg-destructive" },
+  { token: "--border", classe: "bg-border" },
+  { token: "--ring", classe: "bg-ring" },
+];
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/docs/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <main className="mx-auto flex max-w-5xl flex-col gap-16 px-8 py-20">
+      <header className="flex flex-col gap-3">
+        <h1 className="text-4xl font-semibold tracking-tight">Design System</h1>
+        <p className="text-muted-foreground max-w-prose text-lg">
+          Vitrine de <code className="font-mono">@repo/ui</code>. Tokens e
+          componentes vêm de <code className="font-mono">DESIGN.md</code> e são
+          verificados contra WCAG AA.
+        </p>
+      </header>
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.dev/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+      <section className="flex flex-col gap-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Paleta</h2>
+        <p className="text-muted-foreground max-w-prose">
+          Cores de superfície e acento. Nenhuma atinge 4.5:1 sobre branco, por
+          isso nenhuma é usada como cor de texto.
+        </p>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {paleta.map((cor) => (
+            <figure key={cor.token} className="flex flex-col gap-2">
+              <div className={`h-20 rounded-lg ${cor.classe}`} />
+              <figcaption className="font-mono text-sm">
+                {cor.nome}
+                <span className="text-muted-foreground block text-xs">
+                  {cor.token}
+                </span>
+              </figcaption>
+            </figure>
+          ))}
         </div>
-        <Button appName="docs" className={styles.secondary}>
-          Open alert
-        </Button>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.dev?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to turborepo.dev →
-        </a>
-      </footer>
-    </div>
+      </section>
+
+      <section className="flex flex-col gap-6">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Tokens semânticos
+        </h2>
+        <div className="grid grid-cols-3 gap-4 sm:grid-cols-5 lg:grid-cols-9">
+          {tokensSemanticos.map((token) => (
+            <figure key={token.token} className="flex flex-col gap-2">
+              <div className={`h-14 rounded-lg ${token.classe}`} />
+              <figcaption className="text-muted-foreground font-mono text-xs">
+                {token.token}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+
+      <section className="flex flex-col gap-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Botões</h2>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button>Primário</Button>
+          <Button variant="secondary">Secundário</Button>
+          <Button variant="outline">Contorno</Button>
+          <Button variant="ghost">Fantasma</Button>
+          <Button variant="link">Link</Button>
+          <Button variant="destructive">Destrutivo</Button>
+          <Button disabled>Desabilitado</Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button size="sm">Pequeno</Button>
+          <Button size="default">Padrão</Button>
+          <Button size="lg">Grande</Button>
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>Card</CardTitle>
+            <CardDescription>
+              Superfície elevada com raio generoso, conforme DESIGN.md.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="agente">Nome do agente</Label>
+              <Input id="agente" placeholder="Assistente de vendas" />
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm">Salvar</Button>
+              <Button size="sm" variant="outline">
+                Cancelar
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Carregando</CardTitle>
+            <CardDescription>
+              Skeleton usado enquanto os dados chegam.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="flex flex-col gap-6">
+        <h2 className="text-2xl font-semibold tracking-tight">Tabela</h2>
+        <Card>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Agente</TableHead>
+                  <TableHead>Conector</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-medium">
+                    Assistente de vendas
+                  </TableCell>
+                  <TableCell>Notion</TableCell>
+                  <TableCell>Ativo</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell className="font-medium">Suporte técnico</TableCell>
+                  <TableCell>Jira</TableCell>
+                  <TableCell>Rascunho</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </section>
+    </main>
   );
 }
