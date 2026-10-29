@@ -59,7 +59,7 @@ Formato:
 - <decisão relevante, desvio ou consequência>
 - <como foi verificado>
 
-Co-authored-by: opencode <noreply@opencode.ai>
+Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>
 ```
 
 Regras:
@@ -68,6 +68,7 @@ Regras:
 - Descreva o **porquê**, não repita o diff.
 - Se houver ADR, cite no corpo: `Refs: ADR 0003`.
 - O trailer `Co-authored-by` é obrigatório e deve ser a **última linha**.
+- Use exatamente `OpenCode Agent <opencode-agent@opencode.invalid>`. O domínio `.invalid` é reservado pela RFC 2606 e não pertence a nenhuma conta do GitHub — não troque por um e-mail real, sob pena de atribuir o commit a um terceiro.
 
 ## 4. Commit
 

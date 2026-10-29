@@ -104,7 +104,7 @@ Com a entrega apresentada, execute o comando `/commit-and-push`:
 
 1. Ele analisa o diff, gera a mensagem em Conventional Commits, commita e faz push
 2. Se a spec tiver etapas independentes, rode ao final de cada etapa; caso contrário, ao final da spec
-3. O trailer `Co-authored-by: opencode <noreply@opencode.ai>` é obrigatório e o comando já o inclui
+3. O trailer `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>` é obrigatório e o comando já o inclui (domínio `.invalid`, RFC 2606, para não vincular a conta real de terceiro)
 4. Sem remote configurado, informe o usuário em vez de deixar o push falhar silenciosamente
 
 ## Regras

@@ -41,7 +41,7 @@ Não omita nenhum desses itens. Se algo não se aplica, escreva "n/a" com o moti
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
 - A mensagem é validada por `commitlint` (`@commitlint/config-conventional`) no hook `commit-msg`; commit fora do padrão é bloqueado. Configuração em [`commitlint.config.mjs`](../commitlint.config.mjs)
 - Ao final de cada spec, rode o comando `/commit-and-push` (analisa o diff, gera a mensagem, commita e publica)
-- Commits produzidos por agente carregam `Co-authored-by: opencode <noreply@opencode.ai>`
+- Commits produzidos por agente carregam `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>`. O domínio `.invalid` (RFC 2606) garante que o trailer não vincule o commit a nenhuma conta real do GitHub
 - Um commit por mudança lógica
 - Não misture feature com refactor no mesmo commit
 - Corpos com ADR referenciado quando a mudança for arquitetural

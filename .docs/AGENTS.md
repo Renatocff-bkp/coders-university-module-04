@@ -50,7 +50,7 @@ Comandos do OpenCode vivem em [`.opencode/commands/`](../.opencode/commands/).
 | ------------------ | ------------------------------------------------------------------------------------ |
 | `/commit-and-push` | Fechar uma unidade de trabalho: lê o diff, gera a mensagem, commita e faz push       |
 
-Toda execução de spec termina com `/commit-and-push`. O comando segue Conventional Commits e inclui o trailer `Co-authored-by: opencode <noreply@opencode.ai>`.
+Toda execução de spec termina com `/commit-and-push`. O comando segue Conventional Commits e inclui o trailer `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>`. O domínio `.invalid` é reservado pela RFC 2606: o co-autor aparece como texto no GitHub, sem vínculo com conta de terceiro.
 
 ## Regras não negociáveis
 
