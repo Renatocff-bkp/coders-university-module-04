@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: coder-university
+    orgId: 1
+    folder: Coder University
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /var/lib/grafana/dashboards

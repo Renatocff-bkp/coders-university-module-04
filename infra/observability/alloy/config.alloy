@@ -1,0 +1,58 @@
+logging {
+  level  = "warn"
+  format = "logfmt"
+}
+
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    traces  = [otelcol.exporter.otlp.tempo.input]
+    metrics = [otelcol.exporter.otlphttp.mimir.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+
+    tls {
+      insecure = true
+    }
+  }
+}
+
+otelcol.exporter.otlphttp "mimir" {
+  client {
+    endpoint = "http://mimir:9009"
+
+    tls {
+      insecure = true
+    }
+  }
+
+  metrics_endpoint = "http://mimir:9009/otlp/v1/metrics"
+}
+
+loki.source.api "loki_push" {
+  http {
+    listen_address = "0.0.0.0"
+    listen_port    = 3101
+  }
+
+  use_incoming_timestamp = true
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

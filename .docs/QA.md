@@ -41,6 +41,9 @@ npx turbo run lint --filter=api
 # Testes de um domínio específico
 npx turbo run test --filter=api -- --domain agents
 
+# Testes do cliente (app)
+npx turbo run test --filter=app
+
 # Build de um pacote
 npx turbo run build --filter=@repo/ui
 

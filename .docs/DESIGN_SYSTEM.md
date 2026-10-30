@@ -55,18 +55,20 @@ O CSS é exportado como **fonte** e não compilado no pacote: o Tailwind precisa
 ### Como o app consome
 
 ```css
-/* apps/*/app/globals.css */
+/* apps/app/src/styles.css */
 @import "@repo/ui/styles.css";
 ```
 
+No app Vite (`apps/app`), o plugin `@tailwindcss/vite` faz o Tailwind processar o CSS do design system:
+
 ```json
-/* apps/*/package.json */
+/* apps/app/package.json */
 {
-  "devDependencies": { "@tailwindcss/postcss": "^4.1.0", "tailwindcss": "^4.1.0" }
+  "devDependencies": { "@tailwindcss/vite": "4.3.3", "tailwindcss": "4.3.3" }
 }
 ```
 
-Mais um `postcss.config.mjs` com o plugin `@tailwindcss/postcss`. Sem isso o build passa, mas os componentes renderizam sem estilo — o Tailwind não vê as classes.
+No app Next.js (`apps/docs`), o equivalente é o plugin `@tailwindcss/postcss` com `postcss.config.mjs`. Sem isso o build passa, mas os componentes renderizam sem estilo — o Tailwind não vê as classes.
 
 `@repo/ui` precisa estar construído antes do app rodar. O `turbo.json` resolve isso com `build: { dependsOn: ["^build"] }`.
 

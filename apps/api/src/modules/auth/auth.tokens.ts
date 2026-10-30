@@ -1,0 +1,6 @@
+export const AUTH_USER_REPOSITORY = Symbol("AUTH_USER_REPOSITORY");
+export const AUTH_SESSION_REPOSITORY = Symbol("AUTH_SESSION_REPOSITORY");
+export const AUTH_TOKEN_REPOSITORY = Symbol("AUTH_TOKEN_REPOSITORY");
+export const PASSWORD_HASHER = Symbol("PASSWORD_HASHER");
+export const TOKEN_GENERATOR = Symbol("TOKEN_GENERATOR");
+export const CLOCK = Symbol("CLOCK");

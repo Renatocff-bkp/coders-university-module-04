@@ -2,7 +2,7 @@
 
 ## Princípios
 
-- **DRY** — Não duplicar lógica; extraia para utilitários ou para `src/modules/shared`.
+- **DRY** — Não duplicar lógica; extrair para utilitários ou para `src/modules/shared`.
 - **Clean Code** — Nomes descritivos, funções pequenas, responsabilidade única.
 - **SOLID** — Aplicar conforme o contexto, sem rigidizar casos simples.
 - **TDD** — Escreva o teste antes da implementação. Ao final de cada mudança, os testes devem cobrir o comportamento entregue.
@@ -18,7 +18,7 @@ Aplicada em `apps/api` e, quando houver lógica de domínio, no cliente.
 | `infrastructure` | Repositórios concretos, mensageria, filas, clientes HTTP | Regras de negócio              |
 | `interface`      | Endpoints, request handlers, controllers, HTTP           | Regras de negócio              |
 
-A regra que sustenta o desenho: **dependências apontam para dentro.** `domain` não importa de `infrastructure` nem de `interface`.
+A regra que sustenta o desenho: **dependências apontam para dentro**. `domain` não importa de `infrastructure` nem de `interface`.
 
 ## Vertical slices
 
@@ -37,10 +37,10 @@ Estrutura alvo por fatia:
 
 ```
 src/modules/{domain}/
-├── domain/           # Entidades e regras
-├── application/      # Casos de uso
-├── infrastructure/   # Implementações concretas
-├── interface/        # HTTP, DTOs, presenters
+├── domain/
+├── application/
+├── infrastructure/
+├── interface/
 └── {domain}.module.ts
 ```
 
@@ -48,7 +48,7 @@ Módulo compartilhado: `src/modules/shared` para código usado por mais de um do
 
 ## Convenções de código
 
-- **TypeScript strict** — Tipar props, retornos e variáveis explicitamente. `strict: true` e `noUncheckedIndexedAccess` já vêm de `@repo/typescript-config`.
+- **TypeScript strict** — Tipar props, retornos e variáveis explicitamente. `strict: true` e `noUncheckedIndexedAccess` vêm de `@repo/typescript-config`.
 - **ESLint** — Regras via `@repo/eslint-config`. Zero warnings (`--max-warnings 0`).
 - **Prettier** — Formatação automática em `**/*.{ts,tsx,js,mjs,json,md}`, com as exclusões de `.prettierignore` (build, `node_modules`, `package-lock.json` e `AGENTS.md`).
 - **Componentes** — Funções nomeadas exportadas, não arrow functions anônimas expostas.
@@ -78,25 +78,25 @@ Todos os componentes e UIs devem ser responsivos.
 
 ## Testes
 
-| Tipo       | Ferramenta | Onde                          | Foco                                      |
-| ---------- | ---------- | ----------------------------- | ----------------------------------------- |
-| Unitário   | Vitest     | `packages/*`, `src/modules/*` | Regras de domínio e casos de uso isolados |
-| Integração | Vitest     | `src/modules/*`               | Caso de uso com repositório mockado       |
-| E2E        | Playwright | `apps/app`, `apps/api`        | Fluxos críticos do usuário pela interface |
+| Tipo       | Ferramenta | Onde                                             | Foco                                      |
+| ---------- | ---------- | ------------------------------------------------ | ----------------------------------------- |
+| Unit       | Vitest     | `packages/*`, `src/modules/*`, `apps/app/src/**` | Regras de domínio e casos de uso isolados |
+| Integração | Vitest     | `src/modules/*`                                  | Caso de uso com repositório mockado       |
+| E2E        | Playwright | `apps/app`, `apps/api`                           | Fluxos críticos do usuário pela interface |
 
 Regras:
 
 - Cobertura obrigatória para `domain` e `application`
 - Nenhum sleep fixo em teste E2E; esperar por condição observável
-- E2E deve poder rodar com a aplicação sobe automaticamente, sem `dev` manual
+- E2E deve poder rodar com a aplicação subindo automaticamente, sem `dev` manual
 
-## Observabilidade (011y)
+## Observabilidade
 
 Instrumentação é requisito desde o primeiro dia, não item de backlog.
 
 - Logs estruturados em JSON, com `requestId` e `userId` quando aplicável
 - Erros de fronteira (HTTP, filas, conectores) sempre logados com contexto completo
-- Propagação de `requestId` do cliente até a API e serviços downstream
+- Propagação de `requestId` do cliente à API e serviços downstream
 - Métricas de negócio nos caminhos críticos
 - Stack LGTM local via Docker Compose e deploy na Vercel
 
@@ -105,11 +105,32 @@ Instrumentação é requisito desde o primeiro dia, não item de backlog.
 ```
 apps/{app}/
 ├── src/
-│   ├── modules/       # Fatias verticais por domínio
-│   └── shared/        # Código compartilhado
-├── public/
-├── next.config.js | vite.config.ts
-├── tsconfig.json      # Estende @repo/typescript-config
+│   ├── routes/        # Telas por rota
+│   ├── shared/        # api-client, query-client, tipos
+│   ├── components/    # Componentes locais
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── styles.css
+├── index.html
+├── vite.config.ts
+├── tsconfig.json
+└── package.json
+```
+
+Para o app da fundação (`apps/app`), a estrutura entregue é:
+
+```
+apps/app/
+├── src/
+│   ├── routes/status-page.tsx
+│   ├── shared/api-client.ts
+│   ├── shared/query-client.ts
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── styles.css
+├── index.html
+├── vite.config.ts
+├── tsconfig.json
 └── package.json
 ```
 
@@ -119,4 +140,4 @@ apps/{app}/
 - [Conventional Commits](https://conventionalcommits.org) para mensagens: `type(scope): descrição`
 - Mensagens validadas por `commitlint` no hook `commit-msg` (`.husky/commit-msg`); mensagem fora do padrão bloqueia o commit
 - `npm run lint:commit` valida a última mensagem; o hook é ativado pelo `npm install` (script `prepare`)
-- Um commit por mudança lógica; não misture feature e refactor
+- Um commit por mudança lógica; não misturar feature com refactor no mesmo commit

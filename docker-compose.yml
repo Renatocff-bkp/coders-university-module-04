@@ -1,0 +1,82 @@
+name: coder-university-observability
+
+services:
+  grafana:
+    image: grafana/grafana:13.3.0
+    container_name: coder-university-grafana
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infra/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:3.7.9
+    container_name: coder-university-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki.yaml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./infra/observability/loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - loki-data:/loki
+
+  alloy:
+    image: grafana/alloy:v1.21.3
+    container_name: coder-university-alloy
+    restart: unless-stopped
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    ports:
+      - "3101:3101"
+      - "4317:4317"
+      - "4318:4318"
+      - "12345:12345"
+    volumes:
+      - ./infra/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - alloy-data:/var/lib/alloy/data
+    depends_on:
+      - loki
+
+  tempo:
+    image: grafana/tempo:2.10.0
+    container_name: coder-university-tempo
+    restart: unless-stopped
+    profiles: ["full"]
+    command: -config.file=/etc/tempo/tempo.yaml
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./infra/observability/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/var/tempo
+
+  mimir:
+    image: grafana/mimir:3.2.3
+    container_name: coder-university-mimir
+    restart: unless-stopped
+    profiles: ["full"]
+    command: -config.file=/etc/mimir/mimir.yaml
+    ports:
+      - "9009:9009"
+    volumes:
+      - ./infra/observability/mimir/mimir.yaml:/etc/mimir/mimir.yaml:ro
+      - mimir-data:/data/mimir
+
+volumes:
+  grafana-data:
+  loki-data:
+  alloy-data:
+  tempo-data:
+  mimir-data:
