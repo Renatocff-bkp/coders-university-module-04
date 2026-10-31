@@ -4,8 +4,10 @@ import { createTransport } from "nodemailer";
 import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
 import { AuthSessionController } from "./interface/auth-session.controller";
+import { SignUpController } from "./interface/sign-up.controller";
 import { OneTimeTokenService } from "./application/one-time-token.service";
 import { SessionService } from "./application/session.service";
+import { SignUpUseCase } from "./application/sign-up.use-case";
 import {
   AUTH_SESSION_REPOSITORY,
   AUTH_TOKEN_REPOSITORY,
@@ -28,7 +30,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AuthSessionController],
+  controllers: [AuthSessionController, SignUpController],
   providers: [
     DrizzleAuthUserRepository,
     DrizzleAuthSessionRepository,
@@ -82,6 +84,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     },
     SessionService,
     OneTimeTokenService,
+    SignUpUseCase,
   ],
   exports: [
     AUTH_USER_REPOSITORY,
