@@ -1,6 +1,9 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger, Optional } from "@nestjs/common";
 
-import { isSessionActive, SESSION_TTL_MS } from "../domain/auth-session";
+import {
+  isSessionActive,
+  SESSION_TTL_MS as DEFAULT_SESSION_TTL_MS,
+} from "../domain/auth-session";
 import type { Clock } from "../domain/clock";
 import { InvalidTokenError } from "../domain/errors";
 import type { AuthSessionRepository } from "../domain/repositories";
@@ -8,6 +11,7 @@ import type { TokenGenerator } from "../domain/token-generator";
 import {
   AUTH_SESSION_REPOSITORY,
   CLOCK,
+  SESSION_TTL_MS,
   TOKEN_GENERATOR,
 } from "../auth.tokens";
 
@@ -26,11 +30,16 @@ export interface CreatedSession {
 
 @Injectable()
 export class SessionService {
+  private readonly logger = new Logger(SessionService.name);
+
   constructor(
     @Inject(AUTH_SESSION_REPOSITORY)
     private readonly sessions: AuthSessionRepository,
     @Inject(TOKEN_GENERATOR) private readonly tokens: TokenGenerator,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Optional()
+    @Inject(SESSION_TTL_MS)
+    private readonly sessionTtlMs: number = DEFAULT_SESSION_TTL_MS,
   ) {}
 
   /**
@@ -43,13 +52,19 @@ export class SessionService {
     await this.sessions.revokeActiveByUserId(input.userId, now);
 
     const token = this.tokens.generate();
-    const expiresAt = new Date(now.getTime() + SESSION_TTL_MS);
+    const expiresAt = new Date(now.getTime() + this.sessionTtlMs);
     const session = await this.sessions.create({
       userId: input.userId,
       tokenHash: this.tokens.hash(token),
       userAgent: input.userAgent ?? null,
       ipAddress: input.ipAddress ?? null,
       expiresAt,
+    });
+
+    this.logger.log({
+      event: "auth.session.created",
+      userId: input.userId,
+      sessionId: session.id,
     });
 
     return { token, sessionId: session.id, expiresAt };
@@ -89,6 +104,12 @@ export class SessionService {
     }
 
     await this.sessions.revokeById(session.id, this.clock.now());
+
+    this.logger.log({
+      event: "auth.session.revoked",
+      userId: session.userId,
+      sessionId: session.id,
+    });
   }
 
   async revokeAll(userId: string): Promise<number> {

@@ -6,6 +6,7 @@ import {
   generateRequestId,
   getHealth,
   getPing,
+  getSession,
   resolveRequestId,
 } from "./api-client";
 
@@ -72,5 +73,41 @@ describe("api client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(getPing()).rejects.toBeInstanceOf(ApiError);
+  });
+
+  it("sends the bearer token for the auth session request", async () => {
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(
+          JSON.stringify({
+            user: {
+              id: "user-1",
+              firstName: "Ada",
+              lastName: "Lovelace",
+              email: "ada@example.com",
+              emailConfirmedAt: null,
+              createdAt: "2026-10-30T00:00:00.000Z",
+              updatedAt: "2026-10-30T00:00:00.000Z",
+            },
+          }),
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    );
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const session = await getSession("token-abc");
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [
+      string,
+      RequestInit,
+    ];
+
+    expect(String(url)).toContain("/api/v1/auth/session");
+    expect(new Headers(init?.headers).get("authorization")).toBe(
+      "Bearer token-abc",
+    );
+    expect(session.user.id).toBe("user-1");
   });
 });

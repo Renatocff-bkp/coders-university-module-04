@@ -43,6 +43,20 @@ export interface HealthStatus {
   timestamp: string;
 }
 
+export interface PublicAuthUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  emailConfirmedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AuthSessionResponse {
+  user: PublicAuthUser;
+}
+
 export interface PingResult {
   message: string;
   requestId: string;
@@ -57,6 +71,7 @@ export interface ApiResponse<T> {
 export interface RequestOptions {
   method?: string;
   body?: unknown;
+  headers?: Record<string, string>;
   signal?: AbortSignal;
 }
 
@@ -93,6 +108,7 @@ async function request<T>(
       ...(options.body === undefined
         ? {}
         : { "content-type": "application/json" }),
+      ...options.headers,
       [REQUEST_ID_HEADER]: requestId,
     },
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
@@ -131,4 +147,12 @@ export async function getPing(signal?: AbortSignal): Promise<PingResult> {
   });
 
   return { ...data, requestId };
+}
+
+export async function getSession(token?: string): Promise<AuthSessionResponse> {
+  const { data } = await request<AuthSessionResponse>("/api/v1/auth/session", {
+    headers: token ? { authorization: `Bearer ${token}` } : undefined,
+  });
+
+  return data;
 }

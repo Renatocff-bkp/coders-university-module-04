@@ -5,6 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 
 import App from "./App";
 import { queryClient } from "./shared/query-client";
+import { AuthProvider } from "./modules/auth/AuthProvider";
 import "./styles.css";
 
 const rootElement = document.getElementById("root");
@@ -17,7 +18,9 @@ createRoot(rootElement).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>,

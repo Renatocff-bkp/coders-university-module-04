@@ -76,6 +76,11 @@ Todos os componentes e UIs devem ser responsivos.
 - Tabelas devem ter comportamento definido para telas estreitas (scroll horizontal ou stacked rows)
 - Testar com zoom de 200%
 
+## Idioma
+
+- Todo texto de interface, identificador de código, comentário, mensagem de erro da API e template de e-mail em **en-US**.
+- Specs e documentação do repositório permanecem em **pt-BR**.
+
 ## Testes
 
 | Tipo       | Ferramenta | Onde                                             | Foco                                      |
@@ -122,9 +127,17 @@ Para o app da fundação (`apps/app`), a estrutura entregue é:
 ```
 apps/app/
 ├── src/
-│   ├── routes/status-page.tsx
-│   ├── shared/api-client.ts
-│   ├── shared/query-client.ts
+│   ├── modules/auth/
+│   │   ├── AuthProvider.tsx
+│   │   └── auth-storage.ts
+│   ├── routes/
+│   │   ├── home-placeholder.tsx
+│   │   ├── require-auth.tsx
+│   │   ├── sign-in-page.tsx
+│   │   └── status-page.tsx
+│   ├── shared/
+│   │   ├── api-client.ts
+│   │   └── query-client.ts
 │   ├── App.tsx
 │   ├── main.tsx
 │   └── styles.css
@@ -141,3 +154,9 @@ apps/app/
 - Mensagens validadas por `commitlint` no hook `commit-msg` (`.husky/commit-msg`); mensagem fora do padrão bloqueia o commit
 - `npm run lint:commit` valida a última mensagem; o hook é ativado pelo `npm install` (script `prepare`)
 - Um commit por mudança lógica; não misturar feature com refactor no mesmo commit
+
+## Versionamento da API
+
+- Toda rota de negócio fica sob o prefixo global `/api/v1`; auth fica em `/api/v1/auth/*`.
+- Health check operacional pode permanecer em `/health` (fora do prefixo).
+- Erros seguem o formato padronizado `{ error: { code, message, fields?, requestId } }`.

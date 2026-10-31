@@ -50,6 +50,12 @@ describe("API HTTP contract", () => {
     expect(response.headers["x-request-id"]).toBeDefined();
   });
 
+  it("sets the referrer policy to no-referrer", async () => {
+    const response = await request(app.getHttpServer()).get("/health");
+
+    expect(response.headers["referrer-policy"]).toBe("no-referrer");
+  });
+
   it("responds to GET /api/v1/ping", async () => {
     const response = await request(app.getHttpServer()).get("/api/v1/ping");
 

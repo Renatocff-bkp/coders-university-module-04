@@ -4,3 +4,5 @@ export const AUTH_TOKEN_REPOSITORY = Symbol("AUTH_TOKEN_REPOSITORY");
 export const PASSWORD_HASHER = Symbol("PASSWORD_HASHER");
 export const TOKEN_GENERATOR = Symbol("TOKEN_GENERATOR");
 export const CLOCK = Symbol("CLOCK");
+export const EMAIL_SERVICE = Symbol("EMAIL_SERVICE");
+export const SESSION_TTL_MS = Symbol("SESSION_TTL_MS");

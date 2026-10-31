@@ -15,6 +15,7 @@ import {
   REQUEST_ID_HEADER,
   type RequestWithContext,
 } from "./shared/http/request-context";
+import { ReferrerPolicyMiddleware } from "./shared/http/referrer-policy.middleware";
 import { RequestIdMiddleware } from "./shared/http/request-id.middleware";
 import { flattenValidationErrors } from "./shared/http/validation";
 
@@ -32,6 +33,13 @@ export async function createApp(): Promise<INestApplication> {
   app.use(
     (request: RequestWithContext, response: Response, next: NextFunction) => {
       requestIdMiddleware.use(request, response, next);
+    },
+  );
+
+  const referrerPolicyMiddleware = new ReferrerPolicyMiddleware();
+  app.use(
+    (request: RequestWithContext, response: Response, next: NextFunction) => {
+      referrerPolicyMiddleware.use(request, response, next);
     },
   );
 

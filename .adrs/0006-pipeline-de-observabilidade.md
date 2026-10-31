@@ -20,11 +20,11 @@ A fundação exige observabilidade desde o primeiro dia: logs estruturados com `
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| `pino-loki` npm package | Dependência adicional e sink HTTP simples; Alloy centraliza OTLP+Loki |
-| Datadog/OTEL collector externo | Stack local é requisito da fundação |
-| Só Prometheus (métricas) + stdout | Sem traces/logs centralizados; dashboards exigem agregador |
+| Alternativa                       | Motivo para descartar                                                 |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `pino-loki` npm package           | Dependência adicional e sink HTTP simples; Alloy centraliza OTLP+Loki |
+| Datadog/OTEL collector externo    | Stack local é requisito da fundação                                   |
+| Só Prometheus (métricas) + stdout | Sem traces/logs centralizados; dashboards exigem agregador            |
 
 ## Consequências
 

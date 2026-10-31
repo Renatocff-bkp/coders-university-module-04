@@ -19,11 +19,11 @@ A API precisa persistir usuários, sessões, tokens e dados de organização com
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| SQL ad-hoc manual sem migrations versionadas | Perde rastreabilidade e reprodutibilidade |
-| Prisma | Stack diferente da decisão de arquitetura; custo de abstração não justificado |
-| RLS com policies recíprocas entre tabelas | Recursão entre `organizations` e `organization_members`; helper `security definer` resolve |
+| Alternativa                                  | Motivo para descartar                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| SQL ad-hoc manual sem migrations versionadas | Perde rastreabilidade e reprodutibilidade                                                  |
+| Prisma                                       | Stack diferente da decisão de arquitetura; custo de abstração não justificado              |
+| RLS com policies recíprocas entre tabelas    | Recursão entre `organizations` e `organization_members`; helper `security definer` resolve |
 
 ## Consequências
 

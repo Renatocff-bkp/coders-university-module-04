@@ -32,17 +32,17 @@ O repositório nasceu de um `create-turbo` (dois apps Next.js) e a fundação fo
 reestruturada para a arquitetura alvo. As Etapas 1 a 7 da spec `000-foundation`
 foram executadas até o momento:
 
-| Caminho                      | Estado                  | Observação                                                                                      |
-| ---------------------------- | ----------------------- | ----------------------------------------------------------------------------------------------- |
-| `apps/api`                   | **Existe**              | NestJS com health/ping, auth base, Drizzle, RLS, observability e testes HTTP (Etapas 4 a 6)     |
-| `apps/app`                   | **Existe**              | React 19 + Vite 7 + Tailwind 4 + React Router + TanStack Query; tela de status `/app` (Etapa 7) |
-| `apps/docs`                  | Existe (Next.js)        | Vitrine do design system                                                                        |
-| `packages/ui`                | Existe                  | shadcn/ui sobre Tailwind 4, tokens de `DESIGN.md`, build ESM em dist/                           |
-| `packages/eslint-config`     | Existe                  | Funcional                                                                                       |
-| `packages/typescript-config` | Existe                  | Funcional                                                                                       |
-| Supabase (auth/db/storage)   | **Existe**              | Postgres/Auth/Storage local, migrations Drizzle via Supabase CLI, RLS (Etapas 3 a 5)            |
-| Testes (Vitest/Playwright)   | **Existe parcialmente** | Vitest cobre API e app (unit/integration); `test:e2e` segue sem runner até a Etapa 8            |
-| Observabilidade (LGTM)       | **Existe**              | Alloy → Loki/Tempo/Mimir + Grafana dashboard `api-overview` (Etapa 6)                           |
+| Caminho                      | Estado                  | Observação                                                                                                                                    |
+| ---------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api`                   | **Existe**              | NestJS com health/ping, auth foundation (EmailService, Bearer, sessão única), Drizzle, RLS, observability e testes HTTP (Etapas 4 a 7)        |
+| `apps/app`                   | **Existe**              | React 19 + Vite 7 + Tailwind 4 + React Router + TanStack Query; rotas `/auth/sign-in`, `/app` (home protegida) e `/app/status` (Etapas 7 a 9) |
+| `apps/docs`                  | Existe (Next.js)        | Vitrine do design system                                                                                                                      |
+| `packages/ui`                | Existe                  | shadcn/ui sobre Tailwind 4, tokens de `DESIGN.md`, build ESM em dist/                                                                         |
+| `packages/eslint-config`     | Existe                  | Funcional                                                                                                                                     |
+| `packages/typescript-config` | Existe                  | Funcional                                                                                                                                     |
+| Supabase (auth/db/storage)   | **Existe**              | Postgres/Auth/Storage local, migrations Drizzle via Supabase CLI, RLS (Etapas 3 a 5)                                                          |
+| Testes (Vitest/Playwright)   | **Existe parcialmente** | Vitest cobre API e app (unit/integration); `test:e2e` segue sem runner até a Etapa 8                                                          |
+| Observabilidade (LGTM)       | **Existe**              | Alloy → Loki/Tempo/Mimir + Grafana dashboard `api-overview` (Etapa 6)                                                                         |
 
 ## Front-End
 
@@ -59,18 +59,23 @@ foram executadas até o momento:
 
 ## Back-End
 
-| Tecnologia    | Versão    | Papel                                 |
-| ------------- | --------- | ------------------------------------- |
-| NestJS        | 11.2      | API REST, módulos e DI                |
-| Drizzle ORM   | 0.45      | ORM sobre Postgres                    |
-| Drizzle Kit   | 0.31      | Geração de migrations                 |
-| Supabase      | —         | Auth + banco de dados + storage       |
-| Bcrypt        | 6         | Hash de senhas                        |
-| OpenTelemetry | 1.x/0.300 | Traces e métricas via OTLP para Alloy |
+| Tecnologia     | Versão    | Papel                                                                      |
+| -------------- | --------- | -------------------------------------------------------------------------- |
+| NestJS         | 11.2      | API REST, módulos e DI                                                     |
+| Drizzle ORM    | 0.45      | ORM sobre Postgres                                                         |
+| Drizzle Kit    | 0.31      | Geração de migrations                                                      |
+| Supabase       | —         | Auth + banco de dados + storage                                            |
+| Bcrypt         | 6         | Hash de senhas                                                             |
+| OpenTelemetry  | 1.x/0.300 | Traces e métricas via OTLP para Alloy                                      |
+| Auth (própria) | —         | Usuários, sessões, tokens, Bearer, `EmailService`, sessão única (ADR-0007) |
 
 ## Banco de dados
 
 PostgreSQL via Supabase, com RLS habilitado por padrão. Migrations versionadas e aplicadas via `db:migrate`.
+
+## Versionamento da API
+
+Todas as rotas de negócio — incluindo auth — são servidas sob o prefixo global `/api/v1`. O health check operacional permanece em `/health`, fora do prefixo.
 
 ## Infraestrutura
 
@@ -115,6 +120,7 @@ Decisões formais com contexto e trade-offs estão em [`.adrs/`](../.adrs/README
 - **CSS com Tailwind + tokens** — TailwindCSS 4 com tokens de design; shadcn/ui como base do design system.
 - **`@repo/ui` em ESM** — Build com `tsc` emitindo ESM (`"type": "module"`) para consumo correto do Vite.
 - **TypeScript 6.0.3** — Alinhado com o requisito do `@nestjs/cli`, que ainda não suporta o API do TypeScript 7.
+- **Auth própria com Bearer** — Autenticação no próprio NestJS (não no Supabase Auth); Bearer token + `localStorage`; sessão única; ADR-0007.
 
 ## Referências
 

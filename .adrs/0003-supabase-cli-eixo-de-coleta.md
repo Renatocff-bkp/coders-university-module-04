@@ -20,12 +20,12 @@ O template do monorepo não tinha nenhuma dessas peças, e a spec original apont
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| `pino-loki` como dependência | Envia por HTTP para Loki, mas exigia sink próprio ou agente; Alloy mantém o agente como componente versionado e operável |
-| Loki via Promtail/agente embutido no host | O agente via Alloy centraliza o protocolo OTLP/Loki que o OTLP SDK da API já fala, sem processamento customizado |
-| Datadog como backend de logs | Exige conta/provedor externo; a fundação é local e auto-hospedada |
-| Prometheus + Promtail (stack open-source clássica) | Tem duas opções de agente; Alloy unifica OTLP + Loki e deixa o Prometheus como destino apenas de métricas |
+| Alternativa                                        | Motivo para descartar                                                                                                    |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `pino-loki` como dependência                       | Envia por HTTP para Loki, mas exigia sink próprio ou agente; Alloy mantém o agente como componente versionado e operável |
+| Loki via Promtail/agente embutido no host          | O agente via Alloy centraliza o protocolo OTLP/Loki que o OTLP SDK da API já fala, sem processamento customizado         |
+| Datadog como backend de logs                       | Exige conta/provedor externo; a fundação é local e auto-hospedada                                                        |
+| Prometheus + Promtail (stack open-source clássica) | Tem duas opções de agente; Alloy unifica OTLP + Loki e deixa o Prometheus como destino apenas de métricas                |
 
 ## Consequências
 
@@ -73,11 +73,11 @@ Sem um contrato HTTP estável para as features de auth da spec 001–006, qualqu
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| Express puro com controllers manuais | Perde DI/modules do Nest; sem ganho para o escopo atual |
-| Next.js API routes | Mistura camada de framework no app de cliente; pré-requisito é SPA Vite separada |
-| `ValidationPipe` default sem `exceptionFactory` | Erros NestJS default não traçam contrato uniforme |
+| Alternativa                                     | Motivo para descartar                                                            |
+| ----------------------------------------------- | -------------------------------------------------------------------------------- |
+| Express puro com controllers manuais            | Perde DI/modules do Nest; sem ganho para o escopo atual                          |
+| Next.js API routes                              | Mistura camada de framework no app de cliente; pré-requisito é SPA Vite separada |
+| `ValidationPipe` default sem `exceptionFactory` | Erros NestJS default não traçam contrato uniforme                                |
 
 ## Consequências
 
@@ -119,11 +119,11 @@ A API precisa persistir usuários, sessões, tokens e dados de organização com
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| SQL ad-hoc manual sem migrations versionadas | Perde rastreabilidade e reprodutibilidade |
-| Prisma | Stack diferente da decisão de arquitetura; custo de abstração não justificado |
-| RLS com policies recíprocas entre tabelas | Recursão entre `organizations` e `organization_members`; helper `security definer` resolve |
+| Alternativa                                  | Motivo para descartar                                                                      |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| SQL ad-hoc manual sem migrations versionadas | Perde rastreabilidade e reprodutibilidade                                                  |
+| Prisma                                       | Stack diferente da decisão de arquitetura; custo de abstração não justificado              |
+| RLS com policies recíprocas entre tabelas    | Recursão entre `organizations` e `organization_members`; helper `security definer` resolve |
 
 ## Consequências
 
@@ -167,11 +167,11 @@ A fundação exige observabilidade desde o primeiro dia: logs estruturados com `
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| `pino-loki` npm package | Dependência adicional e sink HTTP simples; Alloy centraliza OTLP+Loki |
-| Datadog/OTEL collector externo | Stack local é requisito da fundação |
-| Só Prometheus (métricas) + stdout | Sem traces/logs centralizados; dashboards exigem agregador |
+| Alternativa                       | Motivo para descartar                                                 |
+| --------------------------------- | --------------------------------------------------------------------- |
+| `pino-loki` npm package           | Dependência adicional e sink HTTP simples; Alloy centraliza OTLP+Loki |
+| Datadog/OTEL collector externo    | Stack local é requisito da fundação                                   |
+| Só Prometheus (métricas) + stdout | Sem traces/logs centralizados; dashboards exigem agregador            |
 
 ## Consequências
 

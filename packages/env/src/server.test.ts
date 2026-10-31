@@ -30,6 +30,10 @@ describe("loadEnv", () => {
     expect(env.OTEL_EXPORTER_OTLP_ENDPOINT).toBe("http://localhost:4318");
     expect(env.CORS_ORIGIN).toBe("http://localhost:3000");
     expect(env.LOG_LEVEL).toBe("info");
+    expect(env.SESSION_TTL_DAYS).toBe(7);
+    expect(env.EMAIL_FROM).toBe("no-reply@coders-university.local");
+    expect(env.APP_URL).toBe("http://localhost:5173");
+    expect(env.MAILTRAP_SMTP_PORT).toBe(2525);
   });
 
   it("names every missing variable and never prints secret values", () => {

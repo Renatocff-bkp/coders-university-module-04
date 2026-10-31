@@ -37,6 +37,37 @@ export const serverEnvSchema = z.object({
   OTEL_EXPORTER_OTLP_ENDPOINT: z
     .url("OTEL_EXPORTER_OTLP_ENDPOINT must be a valid URL")
     .default("http://localhost:4318"),
+  APP_URL: z
+    .url("APP_URL must be a valid URL")
+    .default("http://localhost:5173"),
+  SESSION_TTL_DAYS: z.coerce
+    .number()
+    .int("SESSION_TTL_DAYS must be an integer")
+    .min(1, "SESSION_TTL_DAYS must be between 1 and 30")
+    .max(30, "SESSION_TTL_DAYS must be between 1 and 30")
+    .default(7),
+  EMAIL_FROM: z
+    .email("EMAIL_FROM must be a valid email address")
+    .default("no-reply@coders-university.local"),
+  MAILTRAP_SMTP_HOST: z
+    .string()
+    .min(1, "MAILTRAP_SMTP_HOST is required")
+    .default("mailtrap-smtp.io"),
+  MAILTRAP_SMTP_PORT: z.coerce
+    .number()
+    .int("MAILTRAP_SMTP_PORT must be an integer")
+    .min(1, "MAILTRAP_SMTP_PORT must be between 1 and 65535")
+    .max(65535, "MAILTRAP_SMTP_PORT must be between 1 and 65535")
+    .default(2525),
+  MAILTRAP_SMTP_USER: z
+    .string()
+    .min(1, "MAILTRAP_SMTP_USER is required")
+    .default("user"),
+  MAILTRAP_SMTP_PASS: z
+    .string()
+    .min(1, "MAILTRAP_SMTP_PASS is required")
+    .default("pass"),
+  RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required").default(""),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

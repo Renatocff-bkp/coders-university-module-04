@@ -22,11 +22,11 @@ Sem um contrato HTTP estável para as features de auth da spec 001–006, qualqu
 
 ## Alternativas consideradas
 
-| Alternativa | Motivo para descartar |
-| ----------- | ---------------------- |
-| Express puro com controllers manuais | Perde DI/modules do Nest; sem ganho para o escopo atual |
-| Next.js API routes | Mistura camada de framework no app de cliente; pré-requisito é SPA Vite separada |
-| `ValidationPipe` default sem `exceptionFactory` | Erros NestJS default não traçam contrato uniforme |
+| Alternativa                                     | Motivo para descartar                                                            |
+| ----------------------------------------------- | -------------------------------------------------------------------------------- |
+| Express puro com controllers manuais            | Perde DI/modules do Nest; sem ganho para o escopo atual                          |
+| Next.js API routes                              | Mistura camada de framework no app de cliente; pré-requisito é SPA Vite separada |
+| `ValidationPipe` default sem `exceptionFactory` | Erros NestJS default não traçam contrato uniforme                                |
 
 ## Consequências
 
