@@ -39,7 +39,7 @@ describe("MailtrapEmailService", () => {
     expect(sent[0]?.to).toBe("user@example.com");
     expect(sent[0]?.subject).toBe("Confirm your account");
     expect(sent[0]?.html).toContain(
-      "http://localhost:5173/auth/confirm?token=token-abc",
+      "http://localhost:5173/auth/confirm-account?token=token-abc",
     );
     expect(sent[0]?.html).toContain(expiresAt.toISOString());
   });

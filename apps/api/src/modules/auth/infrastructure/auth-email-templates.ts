@@ -68,7 +68,7 @@ export function renderAuthEmail(
           ],
           action: {
             label: "Confirm account",
-            url: `${options.appUrl}/auth/confirm?token=${token}`,
+            url: `${options.appUrl}/auth/confirm-account?token=${token}`,
           },
           footnote:
             "If you did not create an account, you can safely ignore this email.",
