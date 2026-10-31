@@ -18,6 +18,9 @@ coverage
 # Turbo
 .turbo
 
+# Orchestrate-me — worktrees, progresso e auditoria de execuções em lote
+.orchestrate/
+
 # Vercel
 .vercel
 
