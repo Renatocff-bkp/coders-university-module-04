@@ -29,8 +29,14 @@ export class OneTimeTokenService {
     type: AuthTokenType,
     ttlMs: number,
   ): Promise<IssuedToken> {
+    const now = this.clock.now();
     const token = this.generator.generate();
-    const expiresAt = new Date(this.clock.now().getTime() + ttlMs);
+    const expiresAt = new Date(now.getTime() + ttlMs);
+
+    // A new token supersedes every unused token of the same type, so an old
+    // e-mail link cannot be replayed after a resend.
+    await this.tokens.invalidateActiveByUserIdAndType(userId, type, now);
+
     const record = await this.tokens.create({
       userId,
       type,

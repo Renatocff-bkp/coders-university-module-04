@@ -145,4 +145,21 @@ export class InMemoryAuthTokenRepository implements AuthTokenRepository {
       token.usedAt = usedAt;
     }
   }
+
+  async invalidateActiveByUserIdAndType(
+    userId: string,
+    type: AuthTokenType,
+    usedAt: Date,
+  ): Promise<number> {
+    const active = this.tokens.filter(
+      (token) =>
+        token.userId === userId && token.type === type && token.usedAt === null,
+    );
+
+    for (const token of active) {
+      token.usedAt = usedAt;
+    }
+
+    return active.length;
+  }
 }

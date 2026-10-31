@@ -42,4 +42,9 @@ export interface AuthTokenRepository {
   create(input: CreateAuthTokenInput): Promise<AuthToken>;
   findByTokenHash(tokenHash: string): Promise<AuthToken | null>;
   markUsed(id: string, usedAt: Date): Promise<void>;
+  invalidateActiveByUserIdAndType(
+    userId: string,
+    type: AuthTokenType,
+    usedAt: Date,
+  ): Promise<number>;
 }

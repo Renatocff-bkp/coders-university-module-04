@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { eq } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 import {
   DATABASE,
@@ -48,5 +48,25 @@ export class DrizzleAuthTokenRepository implements AuthTokenRepository {
       .update(authTokens)
       .set({ usedAt })
       .where(eq(authTokens.id, id));
+  }
+
+  async invalidateActiveByUserIdAndType(
+    userId: string,
+    type: AuthTokenType,
+    usedAt: Date,
+  ): Promise<number> {
+    const rows = await this.database
+      .update(authTokens)
+      .set({ usedAt })
+      .where(
+        and(
+          eq(authTokens.userId, userId),
+          eq(authTokens.type, type),
+          isNull(authTokens.usedAt),
+        ),
+      )
+      .returning({ id: authTokens.id });
+
+    return rows.length;
   }
 }
