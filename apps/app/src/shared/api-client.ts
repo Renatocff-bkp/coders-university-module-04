@@ -7,6 +7,7 @@ export const API_BASE_URL: string =
 
 export interface FieldError {
   field: string;
+  messages?: string[];
 }
 
 export interface ApiErrorBody {
@@ -96,7 +97,7 @@ export function resolveRequestId(value: string | undefined): string {
   return generateRequestId();
 }
 
-async function request<T>(
+export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<ApiResponse<T>> {
@@ -136,13 +137,13 @@ async function request<T>(
 }
 
 export async function getHealth(signal?: AbortSignal): Promise<HealthStatus> {
-  const { data } = await request<HealthStatus>("/health", { signal });
+  const { data } = await apiRequest<HealthStatus>("/health", { signal });
 
   return data;
 }
 
 export async function getPing(signal?: AbortSignal): Promise<PingResult> {
-  const { data, requestId } = await request<PingResult>("/api/v1/ping", {
+  const { data, requestId } = await apiRequest<PingResult>("/api/v1/ping", {
     signal,
   });
 
@@ -150,9 +151,12 @@ export async function getPing(signal?: AbortSignal): Promise<PingResult> {
 }
 
 export async function getSession(token?: string): Promise<AuthSessionResponse> {
-  const { data } = await request<AuthSessionResponse>("/api/v1/auth/session", {
-    headers: token ? { authorization: `Bearer ${token}` } : undefined,
-  });
+  const { data } = await apiRequest<AuthSessionResponse>(
+    "/api/v1/auth/session",
+    {
+      headers: token ? { authorization: `Bearer ${token}` } : undefined,
+    },
+  );
 
   return data;
 }
