@@ -62,3 +62,28 @@ export function firstInvalidField(
     SIGN_UP_FIELD_ORDER.find((field) => errors[field] !== undefined) ?? null
   );
 }
+
+export interface SignInFormValues {
+  email: string;
+  password: string;
+}
+
+export type SignInField = keyof SignInFormValues;
+
+export type SignInFieldErrors = Partial<Record<SignInField, string>>;
+
+export function validateSignInForm(
+  values: SignInFormValues,
+): SignInFieldErrors {
+  const errors: SignInFieldErrors = {};
+
+  if (!EMAIL_PATTERN.test(values.email.trim())) {
+    errors.email = "Enter a valid email address.";
+  }
+
+  if (values.password.length === 0) {
+    errors.password = "Password is required.";
+  }
+
+  return errors;
+}

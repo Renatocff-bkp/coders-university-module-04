@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   firstInvalidField,
   PASSWORD_MIN_LENGTH,
+  validateSignInForm,
   validateSignUpForm,
 } from "./validation";
 
@@ -13,6 +14,27 @@ const VALID_VALUES = {
   password: "correct-horse",
   passwordConfirmation: "correct-horse",
 };
+
+describe("validateSignInForm", () => {
+  it("accepts an e-mail and a password", () => {
+    expect(
+      validateSignInForm({ email: "ada@example.com", password: "x" }),
+    ).toEqual({});
+  });
+
+  it("does not apply the sign-up password policy", () => {
+    expect(
+      validateSignInForm({ email: "ada@example.com", password: "abc" }),
+    ).toEqual({});
+  });
+
+  it("requires a valid e-mail and a password", () => {
+    const errors = validateSignInForm({ email: " ", password: "" });
+
+    expect(errors.email).toBe("Enter a valid email address.");
+    expect(errors.password).toBe("Password is required.");
+  });
+});
 
 describe("validateSignUpForm", () => {
   it("accepts a complete form", () => {

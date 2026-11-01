@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import StatusPage from "./routes/status-page";
 import HomePlaceholder from "./routes/home-placeholder";
-import SignInPage from "./routes/sign-in-page";
+import SignInPage from "./modules/auth/pages/sign-in-page";
 import CheckEmailPage from "./modules/auth/pages/check-email-page";
 import ConfirmAccountPage from "./modules/auth/pages/confirm-account-page";
 import SignUpPage from "./modules/auth/pages/sign-up-page";
