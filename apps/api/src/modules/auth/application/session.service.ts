@@ -132,7 +132,15 @@ export class SessionService {
       return null;
     }
 
-    await this.sessions.touchLastUsed(session.id, now);
+    // Throttle last-used writes to reduce write amplification under load:
+    // only persist when the previous value is older than the threshold.
+    const lastUsedThresholdMs = 60_000;
+    const previousLastUsed = session.lastUsedAt
+      ? session.lastUsedAt.getTime()
+      : 0;
+    if (now.getTime() - previousLastUsed >= lastUsedThresholdMs) {
+      await this.sessions.touchLastUsed(session.id, now);
+    }
 
     return session.userId;
   }

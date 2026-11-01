@@ -139,6 +139,8 @@ export const EXPERTS: Expert[] = [
   },
 ];
 
+const EXPERTS_BY_KEY = new Map(EXPERTS.map((e) => [e.key, e]));
+
 export function findExpert(key: string): Expert | undefined {
-  return EXPERTS.find((e) => e.key === key);
+  return EXPERTS_BY_KEY.get(key as ExpertKey);
 }

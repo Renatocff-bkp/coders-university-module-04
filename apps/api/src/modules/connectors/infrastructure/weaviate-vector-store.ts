@@ -1,13 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
+import { getVectorStore } from "../../../shared/ai/weaviate.client";
 import { getServerEnv } from "../../../shared/config/env";
-import { getEmbeddings } from "../../../shared/ai/models";
-import { getWeaviateClient } from "../../../shared/ai/weaviate.client";
 
 import type { VectorStore, VectorStoreInput } from "../domain/vector-store";
 
 @Injectable()
 export class WeaviateVectorStore implements VectorStore {
+  private readonly logger = new Logger(WeaviateVectorStore.name);
+
   async store(
     chunks: Array<{ pageContent: string }>,
     connector: VectorStoreInput,
@@ -17,15 +18,7 @@ export class WeaviateVectorStore implements VectorStore {
     try {
       const env = getServerEnv();
       if (!env.OPENAI_API_KEY) return;
-      const embeddings = getEmbeddings();
-      const client = await getWeaviateClient();
-      const { WeaviateStore } = await import("@langchain/weaviate");
-      const store = new WeaviateStore(embeddings, {
-        client,
-        indexName: "ConnectorChunk",
-        textKey: "text",
-        metadataKeys: ["userId", "connectorId", "sourceName", "chunkIndex"],
-      });
+      const store = await getVectorStore();
       const withMeta = chunks.map((d, i) => ({
         pageContent: d.pageContent,
         metadata: {
@@ -37,7 +30,7 @@ export class WeaviateVectorStore implements VectorStore {
       }));
       await store.addDocuments(withMeta);
     } catch (error) {
-      console.error("embedAndStore failed", error);
+      this.logger.error("embedAndStore failed", error as Error);
     }
   }
 }

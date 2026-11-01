@@ -1,10 +1,12 @@
 import { Injectable } from "@nestjs/common";
 
-import { findExpert, type Expert } from "../domain/expert";
+import { EXPERTS, type Expert } from "../domain/expert";
 
 @Injectable()
 export class ExpertCatalogService {
+  private readonly byKey = new Map(EXPERTS.map((e) => [e.key, e]));
+
   find(key: string): Expert | undefined {
-    return findExpert(key);
+    return this.byKey.get(key as Expert["key"]);
   }
 }

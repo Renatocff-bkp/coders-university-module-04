@@ -1,4 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
+import pLimit from "p-limit";
 
 import {
   CONNECTOR_REPOSITORY,
@@ -20,6 +21,8 @@ export interface ProcessInput {
 
 @Injectable()
 export class ProcessConnectorUseCase {
+  private readonly limit = pLimit(2);
+
   constructor(
     @Inject(CONNECTOR_REPOSITORY) private readonly repo: ConnectorRepository,
     @Inject(TEXT_EXTRACTOR) private readonly textExtractor: TextExtractor,
@@ -34,26 +37,30 @@ export class ProcessConnectorUseCase {
     if (connector.status === "ready") return;
 
     await this.repo.updateStatus(connector.id, "processing");
-    try {
-      const text = await this.textExtractor.extract({
-        type: connector.type,
-        content: connector.content,
-        url: connector.url,
-        mimeType: connector.mimeType,
-        name: connector.name,
-      });
-      const chunks = await this.chunker.chunk(text, connector.name);
-      if (this.env.getOpenAiApiKey()) {
-        await this.vectorStore.store(
-          chunks,
-          { id: connector.id, name: connector.name },
-          input.userId,
-        );
+    await this.limit(async () => {
+      try {
+        const text = await this.textExtractor.extract({
+          type: connector.type,
+          content: connector.content,
+          url: connector.url,
+          mimeType: connector.mimeType,
+          name: connector.name,
+        });
+        const chunks = await this.chunker.chunk(text, connector.name);
+        if (this.env.getOpenAiApiKey()) {
+          await this.vectorStore.store(
+            chunks,
+            { id: connector.id, name: connector.name },
+            input.userId,
+          );
+        }
+        // Free the stored base64 payload once processing succeeded.
+        await this.repo.updateContent(connector.id, null);
+        await this.repo.updateStatus(connector.id, "ready");
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        await this.repo.updateStatus(connector.id, "failed", message);
       }
-      await this.repo.updateStatus(connector.id, "ready");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await this.repo.updateStatus(connector.id, "failed", message);
-    }
+    });
   }
 }

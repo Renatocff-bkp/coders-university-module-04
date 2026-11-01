@@ -39,11 +39,18 @@ export class ConnectorRepository implements ConnectorRepositoryPort {
     return rows[0] ? this.toDomain(rows[0]) : null;
   }
 
-  async listByUser(userId: string): Promise<Connector[]> {
+  async listByUser(
+    userId: string,
+    options?: { limit?: number; offset?: number },
+  ): Promise<Connector[]> {
+    const limit = options?.limit ?? 50;
+    const offset = options?.offset ?? 0;
     const rows = await this.db
       .select()
       .from(connectors)
-      .where(eq(connectors.userId, userId));
+      .where(eq(connectors.userId, userId))
+      .limit(limit)
+      .offset(offset);
     return rows.map((r) => this.toDomain(r));
   }
 
@@ -95,7 +102,7 @@ export class ConnectorRepository implements ConnectorRepositoryPort {
       .where(eq(connectors.id, id));
   }
 
-  async updateContent(id: string, content: string): Promise<void> {
+  async updateContent(id: string, content: string | null): Promise<void> {
     await this.db
       .update(connectors)
       .set({ content, updatedAt: new Date() })

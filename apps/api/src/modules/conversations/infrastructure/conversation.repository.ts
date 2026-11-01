@@ -29,7 +29,13 @@ export class ConversationRepository implements ConversationRepositoryPort {
     return rows[0]!;
   }
 
-  async listByUser(userId: string, expertKey?: string) {
+  async listByUser(
+    userId: string,
+    expertKey?: string,
+    options?: { limit?: number; offset?: number },
+  ) {
+    const limit = options?.limit ?? 50;
+    const offset = options?.offset ?? 0;
     if (expertKey) {
       return this.db
         .select()
@@ -40,13 +46,17 @@ export class ConversationRepository implements ConversationRepositoryPort {
             eq(conversations.expertKey, expertKey),
           ),
         )
-        .orderBy(desc(conversations.updatedAt));
+        .orderBy(desc(conversations.updatedAt))
+        .limit(limit)
+        .offset(offset);
     }
     return this.db
       .select()
       .from(conversations)
       .where(eq(conversations.userId, userId))
-      .orderBy(desc(conversations.updatedAt));
+      .orderBy(desc(conversations.updatedAt))
+      .limit(limit)
+      .offset(offset);
   }
 
   async findById(id: string) {
@@ -76,11 +86,18 @@ export class ConversationRepository implements ConversationRepositoryPort {
     return rows[0]!;
   }
 
-  async listMessages(conversationId: string) {
+  async listMessages(
+    conversationId: string,
+    options?: { limit?: number; offset?: number },
+  ) {
+    const limit = options?.limit ?? 100;
+    const offset = options?.offset ?? 0;
     return this.db
       .select()
       .from(messages)
       .where(eq(messages.conversationId, conversationId))
-      .orderBy(messages.createdAt);
+      .orderBy(messages.createdAt)
+      .limit(limit)
+      .offset(offset);
   }
 }

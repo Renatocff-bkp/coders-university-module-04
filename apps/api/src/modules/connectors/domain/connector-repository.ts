@@ -3,7 +3,10 @@ import type { Connector, ConnectorStatus, ConnectorType } from "./connector";
 export interface ConnectorRepository {
   findByHash(userId: string, sourceHash: string): Promise<Connector | null>;
   findById(id: string): Promise<Connector | null>;
-  listByUser(userId: string): Promise<Connector[]>;
+  listByUser(
+    userId: string,
+    options?: { limit?: number; offset?: number },
+  ): Promise<Connector[]>;
   create(input: {
     userId: string;
     organizationId?: string | null;
@@ -21,5 +24,5 @@ export interface ConnectorRepository {
     status: ConnectorStatus,
     errorMessage?: string | null,
   ): Promise<void>;
-  updateContent(id: string, content: string): Promise<void>;
+  updateContent(id: string, content: string | null): Promise<void>;
 }

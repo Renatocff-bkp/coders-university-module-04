@@ -8,7 +8,11 @@ export interface ConversationRepository {
     expertKey: string;
     title?: string | null;
   }): Promise<ConversationRecord>;
-  listByUser(userId: string, expertKey?: string): Promise<ConversationRecord[]>;
+  listByUser(
+    userId: string,
+    expertKey?: string,
+    options?: { limit?: number; offset?: number },
+  ): Promise<ConversationRecord[]>;
   findById(id: string): Promise<ConversationRecord | null>;
   addMessage(input: {
     conversationId: string;
@@ -16,5 +20,8 @@ export interface ConversationRepository {
     content: string;
     metadata?: unknown;
   }): Promise<ConversationRecord>;
-  listMessages(conversationId: string): Promise<ConversationRecord[]>;
+  listMessages(
+    conversationId: string,
+    options?: { limit?: number; offset?: number },
+  ): Promise<ConversationRecord[]>;
 }

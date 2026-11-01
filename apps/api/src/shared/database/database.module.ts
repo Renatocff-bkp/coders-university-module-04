@@ -34,7 +34,7 @@ class DatabaseLifecycle implements OnApplicationShutdown {
       useFactory: () =>
         new Pool({
           connectionString: getServerEnv().DATABASE_URL,
-          max: 10,
+          max: getServerEnv().DATABASE_POOL_MAX,
         }),
     },
     {

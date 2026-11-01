@@ -20,6 +20,12 @@ export const serverEnvSchema = z.object({
     .max(65535, "PORT must be between 1 and 65535")
     .default(3002),
   DATABASE_URL: postgresUrl,
+  DATABASE_POOL_MAX: z.coerce
+    .number()
+    .int("DATABASE_POOL_MAX must be an integer")
+    .min(1, "DATABASE_POOL_MAX must be between 1 and 100")
+    .max(100, "DATABASE_POOL_MAX must be between 1 and 100")
+    .default(10),
   CORS_ORIGIN: z
     .url("CORS_ORIGIN must be a valid URL")
     .default("http://localhost:3000"),

@@ -17,6 +17,7 @@ describe("ProcessConnectorUseCase", () => {
         url: null,
       }),
       updateStatus: vi.fn().mockResolvedValue(undefined),
+      updateContent: vi.fn().mockResolvedValue(undefined),
     } as any;
     const textExtractor = { extract: vi.fn().mockResolvedValue("hello world") };
     const chunker = {
@@ -50,6 +51,7 @@ describe("ProcessConnectorUseCase", () => {
         url: "http://127.0.0.1:1/none",
       }),
       updateStatus: vi.fn().mockResolvedValue(undefined),
+      updateContent: vi.fn().mockResolvedValue(undefined),
     } as any;
     const textExtractor = { extract: vi.fn().mockResolvedValue("") };
     const chunker = { chunk: vi.fn().mockResolvedValue([]) };

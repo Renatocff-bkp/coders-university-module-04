@@ -30,6 +30,23 @@ export class ChatUseCase {
     @Inject(VECTOR_STORE) private readonly vectorStore: VectorStore,
   ) {}
 
+  private async retrieveContextWithTimeout(
+    content: string,
+    userId: string,
+    timeoutMs: number,
+  ): Promise<string> {
+    try {
+      return await Promise.race([
+        this.vectorStore.retrieveContext(content, userId),
+        new Promise<string>((resolve) =>
+          setTimeout(() => resolve(""), timeoutMs),
+        ),
+      ]);
+    } catch {
+      return "";
+    }
+  }
+
   async execute(input: ChatStreamInput): Promise<void> {
     let expertKey = input.expertKey;
     if (!expertKey) {
@@ -43,18 +60,17 @@ export class ChatUseCase {
       return;
     }
 
-    // persist user message
-    await this.repo.addMessage({
-      conversationId: input.conversationId,
-      role: "user",
-      content: input.content,
-    });
-
-    // RAG retrieval (best-effort)
-    const context = await this.vectorStore.retrieveContext(
-      input.content,
-      input.userId,
-    );
+    // Persist the user message and retrieve RAG context in parallel: they do
+    // not depend on each other, so running them together reduces first-token
+    // latency.
+    const [, context] = await Promise.all([
+      this.repo.addMessage({
+        conversationId: input.conversationId,
+        role: "user",
+        content: input.content,
+      }),
+      this.retrieveContextWithTimeout(input.content, input.userId, 1500),
+    ]);
 
     const messages = [
       { role: "system", content: expert.systemPrompt + context },
