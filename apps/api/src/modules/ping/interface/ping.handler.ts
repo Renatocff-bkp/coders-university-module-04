@@ -14,7 +14,7 @@ import { PingMetricsInterceptor } from "./ping-metrics.interceptor";
 
 @Controller("ping")
 @UseInterceptors(PingMetricsInterceptor)
-export class PingController {
+export class PingHandler {
   constructor(private readonly getPing: GetPingUseCase) {}
 
   @Get()
