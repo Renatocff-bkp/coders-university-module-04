@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+} from "@nestjs/common";
 
 import type { RequestWithContext } from "../../../shared/http/request-context";
 import { ForgotPasswordUseCase } from "../application/forgot-password.use-case";
