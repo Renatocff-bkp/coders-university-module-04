@@ -17,7 +17,7 @@ export const SIGN_UP_ACCEPTED_MESSAGE =
   "Check your email to confirm your account";
 
 @Controller("auth")
-export class SignUpController {
+export class SignUpHandler {
   constructor(private readonly signUp: SignUpUseCase) {}
 
   @Post("sign-up")

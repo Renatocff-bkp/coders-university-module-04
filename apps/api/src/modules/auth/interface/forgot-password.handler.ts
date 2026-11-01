@@ -15,7 +15,7 @@ export const FORGOT_PASSWORD_ACCEPTED_MESSAGE =
   "If an account exists for that email, we sent a link to reset your password. Check your inbox and spam folder.";
 
 @Controller("auth")
-export class ForgotPasswordController {
+export class ForgotPasswordHandler {
   constructor(private readonly forgotPassword: ForgotPasswordUseCase) {}
 
   @Post("forgot-password")

@@ -23,7 +23,7 @@ export const EMAIL_NOT_CONFIRMED_MESSAGE =
   "Confirm your email address before signing in. Open the confirmation link we sent you.";
 
 @Controller("auth")
-export class SignInController {
+export class SignInHandler {
   constructor(private readonly signIn: SignInUseCase) {}
 
   @Post("sign-in")

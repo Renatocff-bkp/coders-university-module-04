@@ -3,10 +3,11 @@ import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import type { TestingModule } from "@nestjs/testing";
 import request from "supertest";
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { HttpExceptionFilter } from "../../../shared/http/http-exception.filter";
 import { flattenValidationErrors } from "../../../shared/http/validation";
+import { SignUpUseCase } from "../application/sign-up.use-case";
 import { AuthModule } from "../auth.module";
 import {
   AUTH_SESSION_REPOSITORY,
@@ -17,13 +18,14 @@ import {
   SESSION_TTL_MS,
 } from "../auth.tokens";
 import type { PasswordHasher } from "../domain/password-hasher";
+import type { AuthUserRepository } from "../domain/repositories";
 import {
   InMemoryAuthSessionRepository,
   InMemoryAuthTokenRepository,
   InMemoryAuthUserRepository,
 } from "../testing/in-memory-repositories";
 import { FakeEmailService } from "../testing/fake-email.service";
-import { FORGOT_PASSWORD_ACCEPTED_MESSAGE } from "./forgot-password.controller";
+import { SIGN_UP_ACCEPTED_MESSAGE } from "./sign-up.handler";
 
 class DeterministicPasswordHasher implements PasswordHasher {
   async hash(plainPassword: string): Promise<string> {
@@ -35,15 +37,19 @@ class DeterministicPasswordHasher implements PasswordHasher {
   }
 }
 
-async function flushBackgroundWork(): Promise<void> {
-  await new Promise((resolve) => setImmediate(resolve));
-}
+const VALID_PAYLOAD = {
+  firstName: "Ada",
+  lastName: "Lovelace",
+  email: "ada@example.com",
+  password: "correct-horse",
+  passwordConfirmation: "correct-horse",
+};
 
-describe("POST /api/v1/auth/forgot-password", () => {
+describe("POST /api/v1/auth/sign-up", () => {
   let app: INestApplication;
   let moduleRef: TestingModule;
   let users: InMemoryAuthUserRepository;
-  let tokens: InMemoryAuthTokenRepository;
+  let sessions: InMemoryAuthSessionRepository;
   let email: FakeEmailService;
 
   beforeAll(async () => {
@@ -82,116 +88,96 @@ describe("POST /api/v1/auth/forgot-password", () => {
     app.useGlobalFilters(new HttpExceptionFilter());
     await app.init();
 
+    expect(moduleRef.get(SignUpUseCase)).toBeInstanceOf(SignUpUseCase);
     users = moduleRef.get(AUTH_USER_REPOSITORY);
-    tokens = moduleRef.get(AUTH_TOKEN_REPOSITORY);
+    sessions = moduleRef.get(AUTH_SESSION_REPOSITORY);
     email = moduleRef.get(EMAIL_SERVICE);
-  });
-
-  beforeEach(async () => {
-    users.users.length = 0;
-    tokens.tokens.length = 0;
-    email.sent.length = 0;
-
-    const confirmed = await users.create({
-      firstName: "Ada",
-      lastName: "Lovelace",
-      email: "ada@example.com",
-      passwordHash: "hashed:correct-horse",
-    });
-    confirmed.emailConfirmedAt = new Date();
-
-    await users.create({
-      firstName: "Grace",
-      lastName: "Hopper",
-      email: "grace@example.com",
-      passwordHash: "hashed:correct-horse",
-    });
   });
 
   afterAll(async () => {
     await app.close();
   });
 
-  it("answers 202 with the generic message and sends a reset link to a confirmed account", async () => {
+  it("answers 202 with a generic message and creates no session", async () => {
     const response = await request(app.getHttpServer())
-      .post("/api/v1/auth/forgot-password")
-      .set("x-request-id", "forgot-1")
-      .send({ email: "  Ada@example.com " });
+      .post("/api/v1/auth/sign-up")
+      .set("x-request-id", "sign-up-1")
+      .send(VALID_PAYLOAD);
 
     expect(response.status).toBe(202);
-    expect(response.body).toEqual({
-      message: FORGOT_PASSWORD_ACCEPTED_MESSAGE,
-    });
+    expect(response.body).toEqual({ message: SIGN_UP_ACCEPTED_MESSAGE });
+    expect(JSON.stringify(response.body)).not.toContain("hashed:");
     expect(JSON.stringify(response.body)).not.toContain("token");
-
-    await flushBackgroundWork();
-
-    expect(tokens.tokens).toHaveLength(1);
-    expect(tokens.tokens[0]).toMatchObject({ type: "password_reset" });
+    expect(users.users).toHaveLength(1);
+    expect(users.users[0]).toMatchObject({
+      email: "ada@example.com",
+      emailConfirmedAt: null,
+      passwordHash: "hashed:correct-horse",
+    });
+    expect(sessions.sessions).toHaveLength(0);
     expect(email.sent).toHaveLength(1);
     expect(email.sent[0]).toMatchObject({
-      template: "password_reset",
+      template: "email_confirmation",
       to: "ada@example.com",
     });
     expect(email.sent[0]?.token).toBeTruthy();
   });
 
-  it("answers the same 202 for an unknown address and sends nothing", async () => {
+  it("returns the same 202 for an already registered e-mail without duplicating it", async () => {
     const response = await request(app.getHttpServer())
-      .post("/api/v1/auth/forgot-password")
-      .send({ email: "nobody@example.com" });
+      .post("/api/v1/auth/sign-up")
+      .send({ ...VALID_PAYLOAD, email: "ADA@example.com" });
 
     expect(response.status).toBe(202);
-    expect(response.body).toEqual({
-      message: FORGOT_PASSWORD_ACCEPTED_MESSAGE,
-    });
-
-    await flushBackgroundWork();
-
-    expect(tokens.tokens).toHaveLength(0);
-    expect(email.sent).toHaveLength(0);
+    expect(response.body).toEqual({ message: SIGN_UP_ACCEPTED_MESSAGE });
+    expect(users.users).toHaveLength(1);
+    expect(email.sent).toHaveLength(2);
   });
 
-  it("answers the same 202 for an unconfirmed account and sends nothing", async () => {
+  it("returns 400 when password and confirmation diverge", async () => {
     const response = await request(app.getHttpServer())
-      .post("/api/v1/auth/forgot-password")
-      .send({ email: "grace@example.com" });
-
-    expect(response.status).toBe(202);
-    expect(response.body).toEqual({
-      message: FORGOT_PASSWORD_ACCEPTED_MESSAGE,
-    });
-
-    await flushBackgroundWork();
-
-    expect(tokens.tokens).toHaveLength(0);
-    expect(email.sent).toHaveLength(0);
-  });
-
-  it("returns 400 for a malformed e-mail", async () => {
-    const response = await request(app.getHttpServer())
-      .post("/api/v1/auth/forgot-password")
-      .set("x-request-id", "forgot-invalid")
-      .send({ email: "ada@example" });
+      .post("/api/v1/auth/sign-up")
+      .set("x-request-id", "sign-up-mismatch")
+      .send({ ...VALID_PAYLOAD, passwordConfirmation: "different-password" });
 
     expect(response.status).toBe(400);
     expect(response.body.error).toMatchObject({
       code: "VALIDATION_ERROR",
       fields: [
-        {
-          field: "email",
-          messages: ["Enter a valid email address"],
-        },
+        { field: "passwordConfirmation", messages: ["Passwords do not match"] },
       ],
-      requestId: "forgot-invalid",
     });
+    expect(response.body.error.requestId).toBe("sign-up-mismatch");
   });
 
   it("rejects unknown fields", async () => {
     const response = await request(app.getHttpServer())
-      .post("/api/v1/auth/forgot-password")
-      .send({ email: "ada@example.com", role: "admin" });
+      .post("/api/v1/auth/sign-up")
+      .send({ ...VALID_PAYLOAD, role: "admin" });
 
     expect(response.status).toBe(400);
+  });
+
+  it("does not send a confirmation e-mail for an already confirmed account", async () => {
+    const created = await users.create({
+      firstName: "Grace",
+      lastName: "Hopper",
+      email: "grace@example.com",
+      passwordHash: "hashed:correct-horse",
+    });
+    created.emailConfirmedAt = new Date();
+    email.sent.length = 0;
+
+    const response = await request(app.getHttpServer())
+      .post("/api/v1/auth/sign-up")
+      .send({
+        ...VALID_PAYLOAD,
+        firstName: "Grace",
+        lastName: "Hopper",
+        email: "grace@example.com",
+      });
+
+    expect(response.status).toBe(202);
+    expect(email.sent).toHaveLength(0);
   });
 });

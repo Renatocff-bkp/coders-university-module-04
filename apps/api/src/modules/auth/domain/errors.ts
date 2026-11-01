@@ -28,3 +28,10 @@ export class SignUpValidationError extends Error {
     this.fields = fields;
   }
 }
+
+export class SessionUserNotFoundError extends Error {
+  constructor() {
+    super("Session user not found");
+    this.name = "SessionUserNotFoundError";
+  }
+}

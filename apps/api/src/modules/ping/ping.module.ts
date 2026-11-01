@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
 
 import { GetPingUseCase } from "./application/get-ping.use-case";
-import { PingController } from "./interface/ping.controller";
+import { PingHandler } from "./interface/ping.handler";
+import { PingMetricsInterceptor } from "./interface/ping-metrics.interceptor";
 
 @Module({
-  controllers: [PingController],
-  providers: [GetPingUseCase],
+  controllers: [PingHandler],
+  providers: [GetPingUseCase, PingMetricsInterceptor],
 })
 export class PingModule {}

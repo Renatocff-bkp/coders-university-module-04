@@ -3,14 +3,15 @@ import { createTransport } from "nodemailer";
 
 import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
-import { AuthSessionController } from "./interface/auth-session.controller";
-import { ConfirmAccountController } from "./interface/confirm-account.controller";
-import { ForgotPasswordController } from "./interface/forgot-password.controller";
-import { ResetPasswordController } from "./interface/reset-password.controller";
-import { SignInController } from "./interface/sign-in.controller";
-import { SignOutController } from "./interface/sign-out.controller";
-import { SignUpController } from "./interface/sign-up.controller";
+import { AuthSessionHandler } from "./interface/auth-session.handler";
+import { ConfirmAccountHandler } from "./interface/confirm-account.handler";
+import { ForgotPasswordHandler } from "./interface/forgot-password.handler";
+import { ResetPasswordHandler } from "./interface/reset-password.handler";
+import { SignInHandler } from "./interface/sign-in.handler";
+import { SignOutHandler } from "./interface/sign-out.handler";
+import { SignUpHandler } from "./interface/sign-up.handler";
 import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
+import { GetSessionUseCase } from "./application/get-session.use-case";
 import { ForgotPasswordUseCase } from "./application/forgot-password.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
 import { ResetPasswordUseCase } from "./application/reset-password.use-case";
@@ -43,13 +44,13 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
 @Module({
   imports: [DatabaseModule],
   controllers: [
-    AuthSessionController,
-    SignUpController,
-    ConfirmAccountController,
-    SignInController,
-    SignOutController,
-    ForgotPasswordController,
-    ResetPasswordController,
+    AuthSessionHandler,
+    SignUpHandler,
+    ConfirmAccountHandler,
+    SignInHandler,
+    SignOutHandler,
+    ForgotPasswordHandler,
+    ResetPasswordHandler,
   ],
   providers: [
     DrizzleTransactionManager,
@@ -108,6 +109,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     OneTimeTokenService,
     SignUpUseCase,
     ConfirmAccountUseCase,
+    GetSessionUseCase,
     SignInUseCase,
     SignOutUseCase,
     ForgotPasswordUseCase,

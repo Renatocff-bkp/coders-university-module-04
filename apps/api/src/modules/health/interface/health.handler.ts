@@ -4,7 +4,7 @@ import { GetHealthUseCase } from "../application/get-health.use-case";
 import type { HealthStatus } from "../domain/health-status";
 
 @Controller("health")
-export class HealthController {
+export class HealthHandler {
   constructor(private readonly getHealth: GetHealthUseCase) {}
 
   @Get()

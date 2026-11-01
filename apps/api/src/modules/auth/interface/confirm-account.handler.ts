@@ -13,11 +13,10 @@ import { ConfirmAccountUseCase } from "../application/confirm-account.use-case";
 import type { PublicAuthUser } from "../domain/auth-user";
 import { InvalidTokenError } from "../domain/errors";
 import { ConfirmAccountDto } from "./dto/confirm-account.dto";
-
-export const INVALID_TOKEN_MESSAGE = "Invalid or expired token";
+import { INVALID_TOKEN_MESSAGE } from "./messages";
 
 @Controller("auth")
-export class ConfirmAccountController {
+export class ConfirmAccountHandler {
   constructor(private readonly confirmAccount: ConfirmAccountUseCase) {}
 
   @Post("confirm-account")

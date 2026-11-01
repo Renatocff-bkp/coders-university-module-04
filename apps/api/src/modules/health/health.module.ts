@@ -2,10 +2,10 @@ import { Module } from "@nestjs/common";
 
 import { GetHealthUseCase } from "./application/get-health.use-case";
 import { APP_INFO } from "./domain/health-status";
-import { HealthController } from "./interface/health.controller";
+import { HealthHandler } from "./interface/health.handler";
 
 @Module({
-  controllers: [HealthController],
+  controllers: [HealthHandler],
   providers: [
     GetHealthUseCase,
     {

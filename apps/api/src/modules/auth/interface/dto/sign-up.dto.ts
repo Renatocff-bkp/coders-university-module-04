@@ -1,14 +1,15 @@
 import { Transform } from "class-transformer";
 import {
-  IsEmail,
   IsNotEmpty,
   IsString,
   MaxLength,
   MinLength,
+  Validate,
 } from "class-validator";
 
 import { NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "../../domain/sign-up";
 import { MatchesProperty } from "./matches-property";
+import { IsValidEmailValidator } from "./is-valid-email.validator";
 
 function trimString({ value }: { value: unknown }): unknown {
   return typeof value === "string" ? value.trim() : value;
@@ -32,7 +33,7 @@ export class SignUpDto {
   lastName!: string;
 
   @Transform(trimString)
-  @IsEmail({}, { message: "Enter a valid email address" })
+  @Validate(IsValidEmailValidator, { message: "Enter a valid email address" })
   email!: string;
 
   @IsString()
