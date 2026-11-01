@@ -5,47 +5,10 @@ import {
   IsString,
   MaxLength,
   MinLength,
-  registerDecorator,
-  ValidatorConstraint,
-  type ValidationArguments,
-  type ValidationOptions,
-  type ValidatorConstraintInterface,
 } from "class-validator";
 
 import { NAME_MAX_LENGTH, PASSWORD_MIN_LENGTH } from "../../domain/sign-up";
-
-@ValidatorConstraint({ name: "matchesProperty", async: false })
-class MatchesPropertyConstraint implements ValidatorConstraintInterface {
-  validate(value: unknown, args: ValidationArguments): boolean {
-    const [relatedProperty] = args.constraints as [string];
-    const relatedValue = (args.object as Record<string, unknown>)[
-      relatedProperty
-    ];
-
-    return value === relatedValue;
-  }
-
-  defaultMessage(args: ValidationArguments): string {
-    const [relatedProperty] = args.constraints as [string];
-
-    return `${args.property} must match ${relatedProperty}`;
-  }
-}
-
-function MatchesProperty(
-  property: string,
-  validationOptions?: ValidationOptions,
-): PropertyDecorator {
-  return (object: object, propertyName: string | symbol): void => {
-    registerDecorator({
-      target: object.constructor,
-      propertyName: String(propertyName),
-      options: validationOptions,
-      constraints: [property],
-      validator: MatchesPropertyConstraint,
-    });
-  };
-}
+import { MatchesProperty } from "./matches-property";
 
 function trimString({ value }: { value: unknown }): unknown {
   return typeof value === "string" ? value.trim() : value;
