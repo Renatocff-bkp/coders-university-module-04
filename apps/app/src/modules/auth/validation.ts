@@ -71,6 +71,33 @@ export function firstInvalidField(
   );
 }
 
+export interface ResetPasswordFormValues {
+  password: string;
+  passwordConfirmation: string;
+}
+
+export type ResetPasswordField = keyof ResetPasswordFormValues;
+
+export type ResetPasswordFieldErrors = Partial<
+  Record<ResetPasswordField, string>
+>;
+
+export function validateResetPasswordForm(
+  values: ResetPasswordFormValues,
+): ResetPasswordFieldErrors {
+  const errors: ResetPasswordFieldErrors = {};
+
+  if (values.password.length < PASSWORD_MIN_LENGTH) {
+    errors.password = `Password must be at least ${PASSWORD_MIN_LENGTH} characters.`;
+  }
+
+  if (values.password !== values.passwordConfirmation) {
+    errors.passwordConfirmation = "Passwords do not match.";
+  }
+
+  return errors;
+}
+
 export interface SignInFormValues {
   email: string;
   password: string;

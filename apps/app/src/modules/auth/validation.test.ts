@@ -4,6 +4,7 @@ import {
   firstInvalidField,
   PASSWORD_MIN_LENGTH,
   validateEmail,
+  validateResetPasswordForm,
   validateSignInForm,
   validateSignUpForm,
 } from "./validation";
@@ -99,5 +100,36 @@ describe("validateSignUpForm", () => {
       }),
     ).toBe("firstName");
     expect(firstInvalidField({})).toBeNull();
+  });
+});
+
+describe("validateResetPasswordForm", () => {
+  it("accepts matching passwords that meet the minimum length", () => {
+    expect(
+      validateResetPasswordForm({
+        password: "correct-horse",
+        passwordConfirmation: "correct-horse",
+      }),
+    ).toEqual({});
+  });
+
+  it("enforces the minimum password length", () => {
+    const short = "a".repeat(PASSWORD_MIN_LENGTH - 1);
+
+    expect(
+      validateResetPasswordForm({
+        password: short,
+        passwordConfirmation: short,
+      }).password,
+    ).toBe(`Password must be at least ${PASSWORD_MIN_LENGTH} characters.`);
+  });
+
+  it("requires the confirmation to match the password", () => {
+    expect(
+      validateResetPasswordForm({
+        password: "correct-horse",
+        passwordConfirmation: "correct-hors",
+      }).passwordConfirmation,
+    ).toBe("Passwords do not match.");
   });
 });
