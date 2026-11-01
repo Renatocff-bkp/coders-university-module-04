@@ -37,6 +37,8 @@ const EMPTY_VALUES: SignInFormValues = {
 const GENERIC_ERROR_MESSAGE = "We could not sign you in. Please try again.";
 const SESSION_ENDED_MESSAGE =
   "Your session has ended because you signed in somewhere else or it expired. Sign in again to continue.";
+const PASSWORD_RESET_MESSAGE =
+  "Your password was changed. Sign in with your new password.";
 
 const FIELD_LABELS: Record<SignInField, string> = {
   email: "Email",
@@ -111,6 +113,7 @@ export default function SignInPage() {
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const sessionEnded = searchParams.get("session") === "ended";
+  const passwordReset = searchParams.get("password") === "reset";
 
   const handleChange =
     (field: SignInField) =>
@@ -198,6 +201,16 @@ export default function SignInPage() {
               noValidate
               aria-busy={isSubmitting}
             >
+              {passwordReset && formError === null ? (
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground"
+                >
+                  <p>{PASSWORD_RESET_MESSAGE}</p>
+                </div>
+              ) : null}
+
               {showSessionEnded ? (
                 <div
                   role="status"
