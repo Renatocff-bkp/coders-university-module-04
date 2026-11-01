@@ -72,10 +72,14 @@ Regras:
 
 ## 4. Commit
 
-1. `git add -A`
+Se houver correção de dependência de segurança (`package.json` ou `package-lock.json` alterados pelo `security-deps-auditor`), ela não entra no commit da feature. Use o fluxo de `/open-pr`, que cria o commit `fix(deps)` separado. Fora desse caso:
+
+1. Faça staging por caminho, listando os arquivos da feature. Use `git add -A` apenas quando todo o diff pertencer à mesma mudança lógica.
 2. Confira o que entrou com `git diff --cached --stat`. Se aparecer `.env`, segredo, `node_modules`, artefato de build ou arquivo grande não intencional, **pare** e reporte.
 3. Commite com a mensagem acima (assunto em um `-m`, corpo e trailer em outro, ou use arquivo temporário).
 4. O hook `commit-msg` valida com `commitlint`. Se falhar, corrija a mensagem e repita. **Nunca use `--no-verify`.**
+
+Quando a feature passou pelo gate de dependências, o corpo do commit inclui o bloco `Security:` com o resumo das vulnerabilidades e o hash do commit `fix(deps)`. Formato e exemplos estão em `/open-pr`.
 
 ## 5. Push
 

@@ -30,6 +30,9 @@ load-tests/.data/
 # CTO auditor — local audit artifacts
 .cto-audit/
 
+# Security dependencies — local audit runs
+.security-deps/
+
 # Vercel
 .vercel
 

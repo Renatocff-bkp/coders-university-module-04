@@ -18,6 +18,7 @@ Usar para gerenciar o ciclo de vida das features.
 | `code-review` | Revisar um PR do GitHub com o agente code-reviewer, publicando comentários inline (Conventional Comments) e revisão final (approve/request changes) |
 | `skill-creator`   | Criar ou evoluir uma skill do projeto                                 |
 | `find-skills`     | Procurar skill existente no ecossistema antes de criar uma nova       |
+| `check-security-dependencys` | Auditar dependências (npm audit), aplicar versão corrigida e validar. Acionada pelo subagent `security-deps-auditor` no `/open-pr` |
 
 ## Skills por contexto técnico
 
@@ -53,6 +54,7 @@ Comandos do OpenCode vivem em [`.opencode/commands/`](../.opencode/commands/).
 | Comando            | Quando usar                                                                          |
 | ------------------ | ------------------------------------------------------------------------------------ |
 | `/commit-and-push` | Fechar uma unidade de trabalho: lê o diff, gera a mensagem, commita e faz push       |
+| `/open-pr`         | Abrir o PR de uma feature: roda o `security-deps-auditor`, commita `fix(deps)` separado, valida gates e abre o PR com a seção de segurança |
 
 Toda execução de spec termina com `/commit-and-push`. O comando segue Conventional Commits e inclui o trailer `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>`. O domínio `.invalid` é reservado pela RFC 2606: o co-autor aparece como texto no GitHub, sem vínculo com conta de terceiro.
 
