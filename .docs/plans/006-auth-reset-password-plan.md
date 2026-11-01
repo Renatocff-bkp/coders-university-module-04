@@ -6,17 +6,17 @@ ADR reservado: 0012
 
 ## Perguntas e respostas (exploração dos docs e código)
 
-| Pergunta | Resposta |
-| --- | --- |
-| Token ausente deve ser 400 ou 410? | A spec pede 410 `INVALID_TOKEN`. O DTO aceita token opcional e o caso de uso lança `InvalidTokenError`. Divergência consciente do padrão de `confirm-account` (400). |
-| Onde enviar o e-mail de sucesso? | Após o commit. Assim o e-mail nunca anuncia uma troca que foi revertida. Falha é logada e engolida. ADR 0012. |
-| Como evitar reuso do token em corrida? | `OneTimeTokenService.consume` já usa `markUsedIfUnused`, dentro da transação. |
+| Pergunta                                 | Resposta                                                                                                                                                                                  |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Token ausente deve ser 400 ou 410?       | A spec pede 410 `INVALID_TOKEN`. O DTO aceita token opcional e o caso de uso lança `InvalidTokenError`. Divergência consciente do padrão de `confirm-account` (400).                      |
+| Onde enviar o e-mail de sucesso?         | Após o commit. Assim o e-mail nunca anuncia uma troca que foi revertida. Falha é logada e engolida. ADR 0012.                                                                             |
+| Como evitar reuso do token em corrida?   | `OneTimeTokenService.consume` já usa `markUsedIfUnused`, dentro da transação.                                                                                                             |
 | Hash Bcrypt dentro ou fora da transação? | Fora. Bcrypt custo 12 leva ~250 ms; não segurar a transação aberta. O hash é calculado antes de validar o token, o que também iguala o tempo de resposta para tokens válidos e inválidos. |
-| Como atualizar a senha? | Novo método `updatePasswordHash(id, passwordHash, updatedAt)` em `AuthUserRepository`, espelhando `markEmailConfirmed`. |
-| Como revogar sessões? | `SessionService.revokeAll(userId)` dentro da transação. |
-| Validação de senha? | DTO (`@MinLength(PASSWORD_MIN_LENGTH)` e `MatchesProperty`), espelhando sign-up. Cliente: `validateResetPasswordForm` em `validation.ts`, reutilizando `PASSWORD_MIN_LENGTH`. |
-| Mensagem de sucesso no login? | Query `?password=reset`, mesmo padrão de `?session=ended` da 004. |
-| `<meta name="referrer">` existe? | Sim, em `apps/app/index.html`. |
+| Como atualizar a senha?                  | Novo método `updatePasswordHash(id, passwordHash, updatedAt)` em `AuthUserRepository`, espelhando `markEmailConfirmed`.                                                                   |
+| Como revogar sessões?                    | `SessionService.revokeAll(userId)` dentro da transação.                                                                                                                                   |
+| Validação de senha?                      | DTO (`@MinLength(PASSWORD_MIN_LENGTH)` e `MatchesProperty`), espelhando sign-up. Cliente: `validateResetPasswordForm` em `validation.ts`, reutilizando `PASSWORD_MIN_LENGTH`.             |
+| Mensagem de sucesso no login?            | Query `?password=reset`, mesmo padrão de `?session=ended` da 004.                                                                                                                         |
+| `<meta name="referrer">` existe?         | Sim, em `apps/app/index.html`.                                                                                                                                                            |
 
 ## Etapas
 
@@ -38,12 +38,12 @@ ADR reservado: 0012
 
 ## Riscos
 
-| Risco | Mitigação |
-| --- | --- |
-| Erro de rota 410 vs 400 para token ausente | Teste explícito de integração |
-| Reuso do token em corrida | `markUsedIfUnused` dentro da transação; teste de consumo duplo |
-| Falha de SMTP após troca | Log sem dados sensíveis; troca prevalece |
-| Conflito de arquivos com 004 (`sign-in-page.tsx`, `App.tsx`) | Mudanças mínimas, somente adições |
+| Risco                                                                                               | Mitigação                                                              |
+| --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Erro de rota 410 vs 400 para token ausente                                                          | Teste explícito de integração                                          |
+| Reuso do token em corrida                                                                           | `markUsedIfUnused` dentro da transação; teste de consumo duplo         |
+| Falha de SMTP após troca                                                                            | Log sem dados sensíveis; troca prevalece                               |
+| Conflito de arquivos com 004 (`sign-in-page.tsx`, `App.tsx`)                                        | Mudanças mínimas, somente adições                                      |
 | E2E em `apps/app/e2e` importando `@playwright/test` sem estar no workspace quebrar lint/check-types | Verificar; se quebrar, excluir o arquivo do lint/tsconfig sem executar |
 
 ## Critérios
