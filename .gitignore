@@ -33,6 +33,11 @@ load-tests/.data/
 # Security dependencies — local audit runs
 .security-deps/
 
+# Skill eval workspaces and scratch audit scripts — outputs de execução, não código
+check-security-dependencys-workspace/
+audit-security-eval.json
+scripts/tmp-*.cjs
+
 # Vercel
 .vercel
 
