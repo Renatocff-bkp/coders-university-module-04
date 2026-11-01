@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  Req,
-  UseInterceptors,
-} from "@nestjs/common";
+import { Controller, Get, Query, Req, UseInterceptors } from "@nestjs/common";
 
 import type { RequestWithContext } from "../../../shared/http/request-context";
 import { GetPingUseCase } from "../application/get-ping.use-case";
