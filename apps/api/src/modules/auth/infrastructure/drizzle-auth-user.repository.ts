@@ -1,23 +1,20 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { eq, sql } from "drizzle-orm";
 
-import {
-  DATABASE,
-  type Database,
-} from "../../../shared/database/database.module";
 import { authUsers } from "../../../shared/database/schema";
 import type { AuthUser } from "../domain/auth-user";
 import type {
   AuthUserRepository,
   CreateAuthUserInput,
 } from "../domain/repositories";
+import { DrizzleTransactionManager } from "./drizzle-transaction-manager";
 
 @Injectable()
 export class DrizzleAuthUserRepository implements AuthUserRepository {
-  constructor(@Inject(DATABASE) private readonly database: Database) {}
+  constructor(private readonly transaction: DrizzleTransactionManager) {}
 
   async findById(id: string): Promise<AuthUser | null> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .select()
       .from(authUsers)
       .where(eq(authUsers.id, id))
@@ -27,7 +24,7 @@ export class DrizzleAuthUserRepository implements AuthUserRepository {
   }
 
   async findByEmail(normalizedEmail: string): Promise<AuthUser | null> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .select()
       .from(authUsers)
       .where(eq(sql`lower(${authUsers.email})`, normalizedEmail))
@@ -37,13 +34,27 @@ export class DrizzleAuthUserRepository implements AuthUserRepository {
   }
 
   async create(input: CreateAuthUserInput): Promise<AuthUser> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .insert(authUsers)
       .values(input)
       .returning();
 
     if (!row) {
       throw new Error("Failed to persist auth user");
+    }
+
+    return row;
+  }
+
+  async markEmailConfirmed(id: string, confirmedAt: Date): Promise<AuthUser> {
+    const [row] = await this.transaction.executor
+      .update(authUsers)
+      .set({ emailConfirmedAt: confirmedAt, updatedAt: confirmedAt })
+      .where(eq(authUsers.id, id))
+      .returning();
+
+    if (!row) {
+      throw new Error("Failed to confirm auth user");
     }
 
     return row;

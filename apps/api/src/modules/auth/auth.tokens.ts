@@ -6,3 +6,4 @@ export const TOKEN_GENERATOR = Symbol("TOKEN_GENERATOR");
 export const CLOCK = Symbol("CLOCK");
 export const EMAIL_SERVICE = Symbol("EMAIL_SERVICE");
 export const SESSION_TTL_MS = Symbol("SESSION_TTL_MS");
+export const TRANSACTION_MANAGER = Symbol("TRANSACTION_MANAGER");

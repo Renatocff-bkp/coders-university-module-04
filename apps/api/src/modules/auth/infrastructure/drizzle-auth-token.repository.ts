@@ -1,23 +1,20 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { and, eq, isNull } from "drizzle-orm";
 
-import {
-  DATABASE,
-  type Database,
-} from "../../../shared/database/database.module";
 import { authTokens } from "../../../shared/database/schema";
 import type { AuthToken, AuthTokenType } from "../domain/auth-token";
 import type {
   AuthTokenRepository,
   CreateAuthTokenInput,
 } from "../domain/repositories";
+import { DrizzleTransactionManager } from "./drizzle-transaction-manager";
 
 @Injectable()
 export class DrizzleAuthTokenRepository implements AuthTokenRepository {
-  constructor(@Inject(DATABASE) private readonly database: Database) {}
+  constructor(private readonly transaction: DrizzleTransactionManager) {}
 
   async create(input: CreateAuthTokenInput): Promise<AuthToken> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .insert(authTokens)
       .values(input)
       .returning();
@@ -30,7 +27,7 @@ export class DrizzleAuthTokenRepository implements AuthTokenRepository {
   }
 
   async findByTokenHash(tokenHash: string): Promise<AuthToken | null> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .select()
       .from(authTokens)
       .where(eq(authTokens.tokenHash, tokenHash))
@@ -43,11 +40,14 @@ export class DrizzleAuthTokenRepository implements AuthTokenRepository {
     return { ...row, type: row.type as AuthTokenType };
   }
 
-  async markUsed(id: string, usedAt: Date): Promise<void> {
-    await this.database
+  async markUsedIfUnused(id: string, usedAt: Date): Promise<boolean> {
+    const rows = await this.transaction.executor
       .update(authTokens)
       .set({ usedAt })
-      .where(eq(authTokens.id, id));
+      .where(and(eq(authTokens.id, id), isNull(authTokens.usedAt)))
+      .returning({ id: authTokens.id });
+
+    return rows.length > 0;
   }
 
   async invalidateActiveByUserIdAndType(
@@ -55,7 +55,7 @@ export class DrizzleAuthTokenRepository implements AuthTokenRepository {
     type: AuthTokenType,
     usedAt: Date,
   ): Promise<number> {
-    const rows = await this.database
+    const rows = await this.transaction.executor
       .update(authTokens)
       .set({ usedAt })
       .where(

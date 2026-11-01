@@ -13,6 +13,7 @@ export interface AuthUserRepository {
   findById(id: string): Promise<AuthUser | null>;
   findByEmail(normalizedEmail: string): Promise<AuthUser | null>;
   create(input: CreateAuthUserInput): Promise<AuthUser>;
+  markEmailConfirmed(id: string, confirmedAt: Date): Promise<AuthUser>;
 }
 
 export interface CreateAuthSessionInput {
@@ -41,7 +42,11 @@ export interface CreateAuthTokenInput {
 export interface AuthTokenRepository {
   create(input: CreateAuthTokenInput): Promise<AuthToken>;
   findByTokenHash(tokenHash: string): Promise<AuthToken | null>;
-  markUsed(id: string, usedAt: Date): Promise<void>;
+  /**
+   * Marks the token as used only when it is still unused. Returns whether the
+   * row was updated, which makes the consumption safe under concurrency.
+   */
+  markUsedIfUnused(id: string, usedAt: Date): Promise<boolean>;
   invalidateActiveByUserIdAndType(
     userId: string,
     type: AuthTokenType,

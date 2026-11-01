@@ -13,6 +13,37 @@ import type {
   CreateAuthUserInput,
 } from "../domain/repositories";
 import type { TokenGenerator } from "../domain/token-generator";
+import type { TransactionManager } from "../domain/transactions";
+
+export interface SnapshotParticipant {
+  snapshot(): unknown;
+  restore(snapshot: unknown): void;
+}
+
+/**
+ * Test double for the real transaction boundary. It cannot roll back SQL, so
+ * it snapshots the in-memory repositories and restores them when the work
+ * throws, which is enough to assert atomicity in unit tests.
+ */
+export class InMemoryTransactionManager implements TransactionManager {
+  constructor(private readonly participants: SnapshotParticipant[] = []) {}
+
+  async run<T>(work: () => Promise<T>): Promise<T> {
+    const snapshots = this.participants.map((participant) =>
+      participant.snapshot(),
+    );
+
+    try {
+      return await work();
+    } catch (error) {
+      this.participants.forEach((participant, index) => {
+        participant.restore(snapshots[index]);
+      });
+
+      throw error;
+    }
+  }
+}
 
 export class FixedClock implements Clock {
   constructor(private current: Date) {}
@@ -42,6 +73,14 @@ export class SequentialTokenGenerator implements TokenGenerator {
 export class InMemoryAuthUserRepository implements AuthUserRepository {
   readonly users: AuthUser[] = [];
 
+  snapshot(): AuthUser[] {
+    return structuredClone(this.users);
+  }
+
+  restore(snapshot: unknown): void {
+    this.users.splice(0, this.users.length, ...(snapshot as AuthUser[]));
+  }
+
   async findById(id: string): Promise<AuthUser | null> {
     return this.users.find((user) => user.id === id) ?? null;
   }
@@ -63,10 +102,31 @@ export class InMemoryAuthUserRepository implements AuthUserRepository {
 
     return user;
   }
+
+  async markEmailConfirmed(id: string, confirmedAt: Date): Promise<AuthUser> {
+    const user = this.users.find((candidate) => candidate.id === id);
+
+    if (!user) {
+      throw new Error("Auth user not found");
+    }
+
+    user.emailConfirmedAt = confirmedAt;
+    user.updatedAt = confirmedAt;
+
+    return user;
+  }
 }
 
 export class InMemoryAuthSessionRepository implements AuthSessionRepository {
   readonly sessions: AuthSession[] = [];
+
+  snapshot(): AuthSession[] {
+    return structuredClone(this.sessions);
+  }
+
+  restore(snapshot: unknown): void {
+    this.sessions.splice(0, this.sessions.length, ...(snapshot as AuthSession[]));
+  }
 
   async create(input: CreateAuthSessionInput): Promise<AuthSession> {
     const session: AuthSession = {
@@ -120,6 +180,14 @@ export class InMemoryAuthSessionRepository implements AuthSessionRepository {
 export class InMemoryAuthTokenRepository implements AuthTokenRepository {
   readonly tokens: AuthToken[] = [];
 
+  snapshot(): AuthToken[] {
+    return structuredClone(this.tokens);
+  }
+
+  restore(snapshot: unknown): void {
+    this.tokens.splice(0, this.tokens.length, ...(snapshot as AuthToken[]));
+  }
+
   async create(input: CreateAuthTokenInput): Promise<AuthToken> {
     const token: AuthToken = {
       id: randomUUID(),
@@ -138,12 +206,18 @@ export class InMemoryAuthTokenRepository implements AuthTokenRepository {
     return this.tokens.find((token) => token.tokenHash === tokenHash) ?? null;
   }
 
-  async markUsed(id: string, usedAt: Date): Promise<void> {
-    const token = this.tokens.find((candidate) => candidate.id === id);
+  async markUsedIfUnused(id: string, usedAt: Date): Promise<boolean> {
+    const token = this.tokens.find(
+      (candidate) => candidate.id === id && candidate.usedAt === null,
+    );
 
-    if (token) {
-      token.usedAt = usedAt;
+    if (!token) {
+      return false;
     }
+
+    token.usedAt = usedAt;
+
+    return true;
   }
 
   async invalidateActiveByUserIdAndType(

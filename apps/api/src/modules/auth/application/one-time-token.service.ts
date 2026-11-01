@@ -61,7 +61,13 @@ export class OneTimeTokenService {
       throw new InvalidTokenError();
     }
 
-    await this.tokens.markUsed(record.id, now);
+    // Conditional update: two concurrent requests may both read the same row,
+    // but only one can flip used_at from NULL.
+    const consumed = await this.tokens.markUsedIfUnused(record.id, now);
+
+    if (!consumed) {
+      throw new InvalidTokenError();
+    }
 
     return { ...record, usedAt: now };
   }

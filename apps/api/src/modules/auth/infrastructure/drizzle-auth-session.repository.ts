@@ -1,23 +1,20 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { and, eq, isNull } from "drizzle-orm";
 
-import {
-  DATABASE,
-  type Database,
-} from "../../../shared/database/database.module";
 import { authSessions } from "../../../shared/database/schema";
 import type { AuthSession } from "../domain/auth-session";
 import type {
   AuthSessionRepository,
   CreateAuthSessionInput,
 } from "../domain/repositories";
+import { DrizzleTransactionManager } from "./drizzle-transaction-manager";
 
 @Injectable()
 export class DrizzleAuthSessionRepository implements AuthSessionRepository {
-  constructor(@Inject(DATABASE) private readonly database: Database) {}
+  constructor(private readonly transaction: DrizzleTransactionManager) {}
 
   async create(input: CreateAuthSessionInput): Promise<AuthSession> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .insert(authSessions)
       .values(input)
       .returning();
@@ -30,7 +27,7 @@ export class DrizzleAuthSessionRepository implements AuthSessionRepository {
   }
 
   async findByTokenHash(tokenHash: string): Promise<AuthSession | null> {
-    const [row] = await this.database
+    const [row] = await this.transaction.executor
       .select()
       .from(authSessions)
       .where(eq(authSessions.tokenHash, tokenHash))
@@ -40,7 +37,7 @@ export class DrizzleAuthSessionRepository implements AuthSessionRepository {
   }
 
   async revokeActiveByUserId(userId: string, revokedAt: Date): Promise<number> {
-    const rows = await this.database
+    const rows = await this.transaction.executor
       .update(authSessions)
       .set({ revokedAt })
       .where(
@@ -52,14 +49,14 @@ export class DrizzleAuthSessionRepository implements AuthSessionRepository {
   }
 
   async revokeById(id: string, revokedAt: Date): Promise<void> {
-    await this.database
+    await this.transaction.executor
       .update(authSessions)
       .set({ revokedAt })
       .where(eq(authSessions.id, id));
   }
 
   async touchLastUsed(id: string, lastUsedAt: Date): Promise<void> {
-    await this.database
+    await this.transaction.executor
       .update(authSessions)
       .set({ lastUsedAt })
       .where(eq(authSessions.id, id));
