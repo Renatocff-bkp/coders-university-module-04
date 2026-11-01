@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { getChatModel, getEmbeddings } from "../../../shared/ai/models";
 import { getWeaviateClient } from "../../../shared/ai/weaviate.client";
 import { ConversationRepository } from "../infrastructure/conversation.repository";
-import { findExpert } from "../../agents/domain/expert";
+import { ExpertCatalogService } from "../../agents";
 
 export interface ChatStreamInput {
   conversationId: string;
@@ -17,10 +17,13 @@ export interface ChatStreamInput {
 
 @Injectable()
 export class ChatUseCase {
-  constructor(private readonly repo: ConversationRepository) {}
+  constructor(
+    private readonly repo: ConversationRepository,
+    private readonly experts: ExpertCatalogService,
+  ) {}
 
   async execute(input: ChatStreamInput): Promise<void> {
-    const expert = findExpert(input.expertKey);
+    const expert = this.experts.find(input.expertKey);
     if (!expert) {
       input.onError(new Error("Unknown expert"));
       return;
