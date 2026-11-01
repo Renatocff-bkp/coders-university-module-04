@@ -11,7 +11,9 @@ if (!url) {
 
 const m = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
 if (!m) {
-  console.error("Invalid PR URL. Expected https://github.com/{owner}/{repo}/pull/{number}");
+  console.error(
+    "Invalid PR URL. Expected https://github.com/{owner}/{repo}/pull/{number}",
+  );
   process.exit(1);
 }
 const [, owner, repo, number] = m;
@@ -43,14 +45,19 @@ try {
   const files = [];
   let page = 1;
   while (true) {
-    const res = await gh(`/repos/${owner}/${repo}/pulls/${number}/files?per_page=100&page=${page}`);
+    const res = await gh(
+      `/repos/${owner}/${repo}/pulls/${number}/files?per_page=100&page=${page}`,
+    );
     const batch = await res.json();
     files.push(...batch);
     if (batch.length < 100) break;
     page++;
   }
 
-  const diffRes = await gh(`/repos/${owner}/${repo}/pulls/${number}`, "application/vnd.github.v3.diff");
+  const diffRes = await gh(
+    `/repos/${owner}/${repo}/pulls/${number}`,
+    "application/vnd.github.v3.diff",
+  );
   const diff = await diffRes.text();
 
   const out = { owner, repo, number: Number(number), pr, files, diff };

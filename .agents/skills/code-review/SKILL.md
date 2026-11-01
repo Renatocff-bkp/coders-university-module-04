@@ -20,8 +20,8 @@ Skill para revisar um Pull Request do GitHub de ponta a ponta: coleta o diff, ex
 
 ## Argumentos
 
-| Argumento | Obrigatório | Descrição |
-| --------- | ----------- | --------- |
+| Argumento | Obrigatório | Descrição                    |
+| --------- | ----------- | ---------------------------- |
 | `pr-url`  | Sim         | URL completa do PR no GitHub |
 
 ## Pré-requisitos
@@ -154,7 +154,12 @@ Monte o payload:
   "body": "<summary do agente + legenda de decisão>",
   "event": "APPROVE | REQUEST_CHANGES",
   "comments": [
-    { "path": "...", "line": 42, "side": "RIGHT", "body": "**issue (blocking):** ..." }
+    {
+      "path": "...",
+      "line": 42,
+      "side": "RIGHT",
+      "body": "**issue (blocking):** ..."
+    }
   ]
 }
 ```
@@ -171,13 +176,13 @@ O script imprime a URL da revisão criada. Se falhar, reporte o erro e o payload
 
 Apresente ao usuário:
 
-| Item | Conteúdo |
-| ---- | -------- |
-| PR | owner/repo#number |
-| Decisão | Aprovado / Mudanças solicitadas |
-| Comentários inline | Quantidade por label |
-| Bloqueadores | Lista resumida (se houver) |
-| Link da revisão | URL retornada pelo script |
+| Item               | Conteúdo                        |
+| ------------------ | ------------------------------- |
+| PR                 | owner/repo#number               |
+| Decisão            | Aprovado / Mudanças solicitadas |
+| Comentários inline | Quantidade por label            |
+| Bloqueadores       | Lista resumida (se houver)      |
+| Link da revisão    | URL retornada pelo script       |
 
 ## Regras
 

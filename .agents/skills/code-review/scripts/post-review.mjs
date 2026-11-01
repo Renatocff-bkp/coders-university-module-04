@@ -14,7 +14,9 @@ if (!url || !payloadPath) {
 
 const m = url.match(/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/);
 if (!m) {
-  console.error("Invalid PR URL. Expected https://github.com/{owner}/{repo}/pull/{number}");
+  console.error(
+    "Invalid PR URL. Expected https://github.com/{owner}/{repo}/pull/{number}",
+  );
   process.exit(1);
 }
 const [, owner, repo, number] = m;
@@ -44,7 +46,10 @@ const headers = {
 
 // Fetch head sha if commit_id not provided
 if (!payload.commit_id) {
-  const prRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${number}`, { headers });
+  const prRes = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/pulls/${number}`,
+    { headers },
+  );
   if (!prRes.ok) {
     console.error(`Failed to fetch PR: ${prRes.status} ${prRes.statusText}`);
     process.exit(1);
@@ -65,11 +70,14 @@ const body = {
   })),
 };
 
-const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls/${number}/reviews`, {
-  method: "POST",
-  headers,
-  body: JSON.stringify(body),
-});
+const res = await fetch(
+  `https://api.github.com/repos/${owner}/${repo}/pulls/${number}/reviews`,
+  {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  },
+);
 
 const text = await res.text();
 if (!res.ok) {
@@ -77,4 +85,10 @@ if (!res.ok) {
   process.exit(1);
 }
 const data = JSON.parse(text);
-console.log(JSON.stringify({ id: data.id, state: data.state, html_url: data.html_url }, null, 2));
+console.log(
+  JSON.stringify(
+    { id: data.id, state: data.state, html_url: data.html_url },
+    null,
+    2,
+  ),
+);
