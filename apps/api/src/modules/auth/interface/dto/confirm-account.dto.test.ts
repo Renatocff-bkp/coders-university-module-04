@@ -5,7 +5,9 @@ import { describe, expect, it } from "vitest";
 import { flattenValidationErrors } from "../../../../shared/http/validation";
 import { ConfirmAccountDto } from "./confirm-account.dto";
 
-async function invalidFields(payload: Record<string, unknown>): Promise<string[]> {
+async function invalidFields(
+  payload: Record<string, unknown>,
+): Promise<string[]> {
   const dto = plainToInstance(ConfirmAccountDto, payload);
   const errors = await validate(dto, {
     whitelist: true,

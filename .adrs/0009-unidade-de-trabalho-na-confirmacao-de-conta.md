@@ -30,11 +30,11 @@ export interface TransactionManager {
 
 ## Alternativas consideradas
 
-| Alternativa                                                          | Por que não foi escolhida                                                                                                                              |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Transação aberta direto no caso de uso, passando `tx` para os serviços | Acopla `SessionService` e `OneTimeTokenService` ao Drizzle e exige duplicar os serviços para o caminho transacional.                                  |
-| Só consumo condicional, sem unidade de trabalho                      | Garante o uso único do token, mas não impede estado parcial (usuário confirmado sem sessão) se a criação da sessão falhar.                            |
-| Enviar o e-mail de nova sessão depois do commit (outbox)             | Exige fila ou tabela de outbox, fora do escopo desta spec. Fica registrado como evolução possível.                                                    |
+| Alternativa                                                            | Por que não foi escolhida                                                                                                  |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Transação aberta direto no caso de uso, passando `tx` para os serviços | Acopla `SessionService` e `OneTimeTokenService` ao Drizzle e exige duplicar os serviços para o caminho transacional.       |
+| Só consumo condicional, sem unidade de trabalho                        | Garante o uso único do token, mas não impede estado parcial (usuário confirmado sem sessão) se a criação da sessão falhar. |
+| Enviar o e-mail de nova sessão depois do commit (outbox)               | Exige fila ou tabela de outbox, fora do escopo desta spec. Fica registrado como evolução possível.                         |
 
 ## Consequências
 

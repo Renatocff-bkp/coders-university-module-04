@@ -141,9 +141,9 @@ describe("ConfirmAccountUseCase", () => {
 
     await useCase.execute({ token: issued.token });
 
-    await expect(useCase.execute({ token: issued.token })).rejects.toBeInstanceOf(
-      InvalidTokenError,
-    );
+    await expect(
+      useCase.execute({ token: issued.token }),
+    ).rejects.toBeInstanceOf(InvalidTokenError);
     expect(sessions.sessions).toHaveLength(1);
     expect(email.sent).toHaveLength(1);
   });
@@ -153,9 +153,9 @@ describe("ConfirmAccountUseCase", () => {
 
     clock.advance(EMAIL_CONFIRMATION_TTL_MS);
 
-    await expect(useCase.execute({ token: issued.token })).rejects.toBeInstanceOf(
-      InvalidTokenError,
-    );
+    await expect(
+      useCase.execute({ token: issued.token }),
+    ).rejects.toBeInstanceOf(InvalidTokenError);
     expect(users.users[0]?.emailConfirmedAt).toBeNull();
     expect(sessions.sessions).toHaveLength(0);
     expect(email.sent).toHaveLength(0);
@@ -164,9 +164,9 @@ describe("ConfirmAccountUseCase", () => {
   it("rejects a token of another type", async () => {
     const { issued } = await seedToken("password_reset");
 
-    await expect(useCase.execute({ token: issued.token })).rejects.toBeInstanceOf(
-      InvalidTokenError,
-    );
+    await expect(
+      useCase.execute({ token: issued.token }),
+    ).rejects.toBeInstanceOf(InvalidTokenError);
     expect(users.users[0]?.emailConfirmedAt).toBeNull();
     expect(sessions.sessions).toHaveLength(0);
   });

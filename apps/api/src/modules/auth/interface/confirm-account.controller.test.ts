@@ -192,7 +192,9 @@ describe("POST /api/v1/auth/confirm-account", () => {
 
     expect(response.status).toBe(410);
     expect(response.body.error).toMatchObject({ code: "INVALID_TOKEN" });
-    expect(users.users.find((u) => u.id === user.id)?.emailConfirmedAt).toBeNull();
+    expect(
+      users.users.find((u) => u.id === user.id)?.emailConfirmedAt,
+    ).toBeNull();
     expect(sessions.sessions.filter((s) => s.userId === user.id)).toHaveLength(
       0,
     );

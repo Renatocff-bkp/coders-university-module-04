@@ -125,7 +125,11 @@ export class InMemoryAuthSessionRepository implements AuthSessionRepository {
   }
 
   restore(snapshot: unknown): void {
-    this.sessions.splice(0, this.sessions.length, ...(snapshot as AuthSession[]));
+    this.sessions.splice(
+      0,
+      this.sessions.length,
+      ...(snapshot as AuthSession[]),
+    );
   }
 
   async create(input: CreateAuthSessionInput): Promise<AuthSession> {
