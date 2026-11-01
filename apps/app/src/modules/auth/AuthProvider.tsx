@@ -1,5 +1,6 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -65,23 +66,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [token]);
 
+  const saveToken = useCallback((nextToken: string) => {
+    saveAuthToken(nextToken);
+    setToken(nextToken);
+  }, []);
+
+  const clearToken = useCallback(() => {
+    clearAuthToken();
+    setToken(null);
+    setUser(null);
+    setStatus("unauthenticated");
+  }, []);
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
       user,
       token,
-      saveToken: (nextToken: string) => {
-        saveAuthToken(nextToken);
-        setToken(nextToken);
-      },
-      clearToken: () => {
-        clearAuthToken();
-        setToken(null);
-        setUser(null);
-        setStatus("unauthenticated");
-      },
+      saveToken,
+      clearToken,
     }),
-    [status, user, token],
+    [status, user, token, saveToken, clearToken],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
