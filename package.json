@@ -53,5 +53,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "overrides": {
+    "multer": "2.5.0"
+  }
 }
