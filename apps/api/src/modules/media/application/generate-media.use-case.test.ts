@@ -18,4 +18,15 @@ describe("GenerateMediaUseCase", () => {
       uc.generateVideo({ userId: "u1", prompt: "a video" }),
     ).rejects.toThrow();
   });
+
+  it("execute dispatches by type", async () => {
+    const repo = { create: vi.fn() } as any;
+    const uc = new GenerateMediaUseCase(repo);
+    await expect(
+      uc.execute({ userId: "u1", type: "image", prompt: "a cat" }),
+    ).rejects.toThrow();
+    await expect(
+      uc.execute({ userId: "u1", type: "video", prompt: "a video" }),
+    ).rejects.toThrow();
+  });
 });

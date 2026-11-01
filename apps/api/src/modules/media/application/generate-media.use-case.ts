@@ -48,6 +48,17 @@ export class GenerateMediaUseCase {
     return asset;
   }
 
+  async execute(input: {
+    userId: string;
+    type: "image" | "video";
+    prompt: string;
+  }) {
+    if (input.type === "image") {
+      return this.generateImage({ userId: input.userId, prompt: input.prompt });
+    }
+    return this.generateVideo({ userId: input.userId, prompt: input.prompt });
+  }
+
   async generateVideo(input: { userId: string; prompt: string }) {
     // Video generation via Gemini is not implemented in this iteration.
     throw new Error("Video generation not implemented yet");
