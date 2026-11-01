@@ -11,10 +11,8 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { RequestWithContext } from "../../../shared/http/request-context";
 import { AuthGuard } from "../../auth";
-import {
-  CreateConnectorFromFileUseCase,
-  CreateConnectorFromUrlUseCase,
-} from "../application/create-connector.use-case";
+import { CreateConnectorFromFileUseCase } from "../application/create-connector-from-file.use-case";
+import { CreateConnectorFromUrlUseCase } from "../application/create-connector-from-url.use-case";
 import { ConnectorRepository } from "../infrastructure/connector.repository";
 
 @Controller("connectors")

@@ -3,12 +3,11 @@ import { MulterModule } from "@nestjs/platform-express";
 
 import { AuthModule } from "../auth/auth.module";
 
+import { CONNECTOR_REPOSITORY } from "./connectors.tokens";
 import { ConnectorRepository } from "./infrastructure/connector.repository";
 import { ProcessConnectorUseCase } from "./application/process-connector.use-case";
-import {
-  CreateConnectorFromFileUseCase,
-  CreateConnectorFromUrlUseCase,
-} from "./application/create-connector.use-case";
+import { CreateConnectorFromFileUseCase } from "./application/create-connector-from-file.use-case";
+import { CreateConnectorFromUrlUseCase } from "./application/create-connector-from-url.use-case";
 import { ConnectorsHandler } from "./interface/connectors.handler";
 
 @Module({
@@ -19,6 +18,7 @@ import { ConnectorsHandler } from "./interface/connectors.handler";
   controllers: [ConnectorsHandler],
   providers: [
     ConnectorRepository,
+    { provide: CONNECTOR_REPOSITORY, useExisting: ConnectorRepository },
     ProcessConnectorUseCase,
     CreateConnectorFromFileUseCase,
     CreateConnectorFromUrlUseCase,

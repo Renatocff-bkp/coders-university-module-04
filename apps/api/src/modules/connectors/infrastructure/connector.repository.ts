@@ -7,9 +7,10 @@ import {
 } from "../../../shared/database/database.module";
 import { connectors } from "../../../shared/database/schema";
 import type { Connector, ConnectorStatus } from "../domain/connector";
+import type { ConnectorRepository as ConnectorRepositoryPort } from "../domain/connector-repository";
 
 @Injectable()
-export class ConnectorRepository {
+export class ConnectorRepository implements ConnectorRepositoryPort {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async findByHash(

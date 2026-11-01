@@ -1,7 +1,9 @@
 import { createHash } from "node:crypto";
 import { Injectable } from "@nestjs/common";
 
-import { ConnectorRepository } from "../infrastructure/connector.repository";
+import { Inject } from "@nestjs/common";
+import { CONNECTOR_REPOSITORY } from "../connectors.tokens";
+import type { ConnectorRepository } from "../domain/connector-repository";
 import { getWeaviateClient } from "../../../shared/ai/weaviate.client";
 // Note: getServerEnv imported from shared/config/env in models; re-export not needed
 
@@ -15,7 +17,9 @@ export interface ProcessInput {
 
 @Injectable()
 export class ProcessConnectorUseCase {
-  constructor(private readonly repo: ConnectorRepository) {}
+  constructor(
+    @Inject(CONNECTOR_REPOSITORY) private readonly repo: ConnectorRepository,
+  ) {}
 
   async execute(input: ProcessInput): Promise<void> {
     const connector = await this.repo.findById(input.connectorId);

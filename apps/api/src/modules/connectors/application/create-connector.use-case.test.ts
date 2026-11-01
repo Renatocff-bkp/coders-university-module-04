@@ -1,9 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-import {
-  CreateConnectorFromFileUseCase,
-  CreateConnectorFromUrlUseCase,
-} from "./create-connector.use-case";
+import { CreateConnectorFromFileUseCase } from "./create-connector-from-file.use-case";
+import { CreateConnectorFromUrlUseCase } from "./create-connector-from-url.use-case";
 
 describe("CreateConnectorFromFileUseCase", () => {
   it("deduplicates when hash exists", async () => {
