@@ -418,26 +418,26 @@ Se `npm`/`npx` estiverem bloqueados no shell, rode `cmd /c "npm run <script>"` o
 
 | WU    | Status  | Commit | Testes | Observação |
 | ----- | ------- | ------ | ------ | ---------- |
-| WU-01 | pending | —      | —      | —          |
-| WU-02 | pending | —      | —      | —          |
-| WU-03 | pending | —      | —      | —          |
-| WU-04 | pending | —      | —      | —          |
-| WU-05 | pending | —      | —      | —          |
-| WU-06 | pending | —      | —      | —          |
-| WU-07 | pending | —      | —      | —          |
-| WU-08 | pending | —      | —      | —          |
-| WU-09 | pending | —      | —      | —          |
-| WU-10 | pending | —      | —      | —          |
-| WU-11 | pending | —      | —      | —          |
-| WU-12 | pending | —      | —      | —          |
-| WU-13 | pending | —      | —      | —          |
-| WU-14 | pending | —      | —      | —          |
-| WU-15 | pending | —      | —      | —          |
-| WU-16 | pending | —      | —      | —          |
-| WU-17 | pending | —      | —      | —          |
-| WU-18 | pending | —      | —      | —          |
-| WU-19 | pending | —      | —      | —          |
-| WU-20 | pending | —      | —      | —          |
+| WU-01 | done    | —      | —      | —          |
+| WU-02 | done    | —      | —      | —          |
+| WU-03 | done    | —      | —      | —          |
+| WU-04 | done    | —      | —      | —          |
+| WU-05 | done    | —      | —      | —          |
+| WU-06 | done    | —      | —      | —          |
+| WU-07 | done    | —      | —      | —          |
+| WU-08 | done    | —      | —      | —          |
+| WU-09 | done    | —      | —      | —          |
+| WU-10 | done    | —      | —      | —          |
+| WU-11 | done    | —      | —      | —          |
+| WU-12 | done    | —      | —      | —          |
+| WU-13 | done    | —      | —      | —          |
+| WU-14 | done    | —      | —      | —          |
+| WU-15 | done    | —      | —      | —          |
+| WU-16 | done    | —      | —      | —          |
+| WU-17 | done    | —      | —      | —          |
+| WU-18 | done    | —      | —      | —          |
+| WU-19 | done    | —      | —      | —          |
+| WU-20 | done    | —      | —      | —          |
 
 ## Riscos residuais
 
