@@ -27,6 +27,9 @@ load-tests/.data/
 # Refactor-vertical-slices — auditoria local, plano e QA da refatoração
 .refactor/
 
+# CTO auditor — local audit artifacts
+.cto-audit/
+
 # Vercel
 .vercel
 
