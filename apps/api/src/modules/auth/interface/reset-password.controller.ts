@@ -11,7 +11,7 @@ import {
 import type { RequestWithContext } from "../../../shared/http/request-context";
 import { ResetPasswordUseCase } from "../application/reset-password.use-case";
 import { InvalidTokenError } from "../domain/errors";
-import { INVALID_TOKEN_MESSAGE } from "./confirm-account.controller";
+import { INVALID_TOKEN_MESSAGE } from "./messages";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller("auth")
