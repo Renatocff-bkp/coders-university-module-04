@@ -1,10 +1,8 @@
 import { Controller, Get, Param } from "@nestjs/common";
 
-import {
-  GetExpertUseCase,
-  GetSuggestionsUseCase,
-  ListExpertsUseCase,
-} from "../application/list-experts.use-case";
+import { ListExpertsUseCase } from "../application/list-experts.use-case";
+import { GetExpertUseCase } from "../application/get-expert.use-case";
+import { GetSuggestionsUseCase } from "../application/get-suggestions.use-case";
 
 @Controller("experts")
 export class ExpertsHandler {

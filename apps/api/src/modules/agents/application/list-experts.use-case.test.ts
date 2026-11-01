@@ -1,10 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  ListExpertsUseCase,
-  GetExpertUseCase,
-  GetSuggestionsUseCase,
-} from "./list-experts.use-case";
+import { ListExpertsUseCase } from "./list-experts.use-case";
+import { GetExpertUseCase } from "./get-expert.use-case";
+import { GetSuggestionsUseCase } from "./get-suggestions.use-case";
 import { EXPERTS } from "../domain/expert";
 
 describe("ListExpertsUseCase", () => {
