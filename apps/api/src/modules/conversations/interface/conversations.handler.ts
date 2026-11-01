@@ -11,7 +11,7 @@ import {
 } from "@nestjs/common";
 import type { Response } from "express";
 import type { RequestWithContext } from "../../../shared/http/request-context";
-import { AuthGuard } from "../../auth/interface/auth-guard";
+import { AuthGuard } from "../../auth";
 import { ConversationRepository } from "../infrastructure/conversation.repository";
 import { ChatUseCase } from "../application/chat.use-case";
 

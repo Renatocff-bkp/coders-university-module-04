@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { RequestWithContext } from "../../../shared/http/request-context";
-import { AuthGuard } from "../../auth/interface/auth-guard";
+import { AuthGuard } from "../../auth";
 import {
   CreateConnectorFromFileUseCase,
   CreateConnectorFromUrlUseCase,
