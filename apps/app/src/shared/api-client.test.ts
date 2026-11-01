@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   API_BASE_URL,
   ApiError,
+  apiRequest,
   generateRequestId,
   getHealth,
   getPing,
@@ -73,6 +74,79 @@ describe("api client", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     await expect(getPing()).rejects.toBeInstanceOf(ApiError);
+  });
+
+  it("clears the token and redirects to sign-in when an authenticated request gets 401", async () => {
+    const storage = new Map<string, string>([["auth.token", "token-abc"]]);
+    const assign = vi.fn();
+
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        setItem: (key: string, value: string) => storage.set(key, value),
+        removeItem: (key: string) => storage.delete(key),
+      },
+      location: { assign },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              error: {
+                code: "UNAUTHORIZED",
+                message: "Invalid or expired token",
+              },
+            }),
+            { status: 401, headers: { "content-type": "application/json" } },
+          ),
+      ),
+    );
+
+    await expect(getSession("token-abc")).rejects.toMatchObject({
+      status: 401,
+    });
+
+    expect(storage.has("auth.token")).toBe(false);
+    expect(assign).toHaveBeenCalledWith("/auth/sign-in?session=ended");
+  });
+
+  it("does not redirect when an anonymous request gets 401", async () => {
+    const assign = vi.fn();
+
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+        removeItem: () => undefined,
+      },
+      location: { assign },
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              error: {
+                code: "INVALID_CREDENTIALS",
+                message: "Invalid email or password.",
+              },
+            }),
+            { status: 401, headers: { "content-type": "application/json" } },
+          ),
+      ),
+    );
+
+    await expect(
+      apiRequest("/api/v1/auth/sign-in", {
+        method: "POST",
+        body: { email: "ada@example.com", password: "wrong" },
+      }),
+    ).rejects.toMatchObject({ status: 401, code: "INVALID_CREDENTIALS" });
+
+    expect(assign).not.toHaveBeenCalled();
   });
 
   it("sends the bearer token for the auth session request", async () => {

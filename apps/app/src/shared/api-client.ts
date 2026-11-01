@@ -1,4 +1,8 @@
+import { clearAuthToken } from "../modules/auth/auth-storage";
+
 export const REQUEST_ID_HEADER = "x-request-id";
+
+const SESSION_ENDED_PATH = "/auth/sign-in?session=ended";
 
 const DEFAULT_BASE_URL = "http://localhost:3002";
 
@@ -18,11 +22,13 @@ export interface ApiErrorBody {
 }
 
 export class ApiError extends Error {
+  readonly status: number;
   readonly code: string;
   readonly fields?: FieldError[];
   readonly requestId?: string;
 
   constructor(init: {
+    status: number;
     code: string;
     message: string;
     fields?: FieldError[];
@@ -30,6 +36,7 @@ export class ApiError extends Error {
   }) {
     super(init.message);
     this.name = "ApiError";
+    this.status = init.status;
     this.code = init.code;
     this.fields = init.fields;
     this.requestId = init.requestId;
@@ -97,6 +104,12 @@ export function resolveRequestId(value: string | undefined): string {
   return generateRequestId();
 }
 
+function hasAuthorizationHeader(headers?: Record<string, string>): boolean {
+  return Object.keys(headers ?? {}).some(
+    (name) => name.toLowerCase() === "authorization",
+  );
+}
+
 export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {},
@@ -123,7 +136,13 @@ export async function apiRequest<T>(
     { error?: ApiErrorBody } | undefined;
 
   if (!response.ok) {
+    if (response.status === 401 && hasAuthorizationHeader(options.headers)) {
+      clearAuthToken();
+      window.location.assign(SESSION_ENDED_PATH);
+    }
+
     throw new ApiError({
+      status: response.status,
       code: payload?.error?.code ?? "UNKNOWN_ERROR",
       message:
         payload?.error?.message ??
