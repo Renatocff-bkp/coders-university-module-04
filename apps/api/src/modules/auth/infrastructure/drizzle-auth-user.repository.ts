@@ -59,4 +59,22 @@ export class DrizzleAuthUserRepository implements AuthUserRepository {
 
     return row;
   }
+
+  async updatePasswordHash(
+    id: string,
+    passwordHash: string,
+    updatedAt: Date,
+  ): Promise<AuthUser> {
+    const [row] = await this.transaction.executor
+      .update(authUsers)
+      .set({ passwordHash, updatedAt })
+      .where(eq(authUsers.id, id))
+      .returning();
+
+    if (!row) {
+      throw new Error("Failed to update auth user password");
+    }
+
+    return row;
+  }
 }

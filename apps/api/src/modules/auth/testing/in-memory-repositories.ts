@@ -115,6 +115,23 @@ export class InMemoryAuthUserRepository implements AuthUserRepository {
 
     return user;
   }
+
+  async updatePasswordHash(
+    id: string,
+    passwordHash: string,
+    updatedAt: Date,
+  ): Promise<AuthUser> {
+    const user = this.users.find((candidate) => candidate.id === id);
+
+    if (!user) {
+      throw new Error("Auth user not found");
+    }
+
+    user.passwordHash = passwordHash;
+    user.updatedAt = updatedAt;
+
+    return user;
+  }
 }
 
 export class InMemoryAuthSessionRepository implements AuthSessionRepository {

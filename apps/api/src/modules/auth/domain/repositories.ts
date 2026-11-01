@@ -14,6 +14,11 @@ export interface AuthUserRepository {
   findByEmail(normalizedEmail: string): Promise<AuthUser | null>;
   create(input: CreateAuthUserInput): Promise<AuthUser>;
   markEmailConfirmed(id: string, confirmedAt: Date): Promise<AuthUser>;
+  updatePasswordHash(
+    id: string,
+    passwordHash: string,
+    updatedAt: Date,
+  ): Promise<AuthUser>;
 }
 
 export interface CreateAuthSessionInput {
