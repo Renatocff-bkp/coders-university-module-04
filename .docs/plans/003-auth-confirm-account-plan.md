@@ -15,17 +15,17 @@ O que a 001 entrega e será reutilizado:
 
 ## Perguntas respondidas na exploração (feature-concept autônomo)
 
-| Pergunta                                                             | Resposta adotada                                                                                                                       |
-| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| O `consume` atual é atômico?                                         | Não. `markUsed` é incondicional e fora de transação. Precisa de `UPDATE ... WHERE used_at IS NULL` + transação.                        |
-| Como confirmar o usuário?                                            | Novo método `markEmailConfirmed(id, at)` em `AuthUserRepository`; o schema já tem `email_confirmed_at`, não há migration.              |
-| Como garantir RF-04 sem duplicar a regra de sessão?                  | Unidade de trabalho (`TransactionManager`) com transação ambiente; `SessionService` e repositórios participam da mesma transação.      |
-| O e-mail de nova sessão está ligado?                                 | Não. `SessionService.create` revoga e cria, mas nunca chama `sendNewSessionEmail`. Corrigir no serviço (também usado pela 004).         |
-| O que fazer se o e-mail de nova sessão falhar?                       | Logar `auth.session.new_session_email_failed` e seguir; a sessão prevalece, igual ao padrão do sign-up.                                |
-| Códigos HTTP do token inválido                                       | DTO vazio/ausente → 400 `VALIDATION_ERROR`; token desconhecido/expirado/usado/de outro tipo → 410 `INVALID_TOKEN` com mensagem genérica. |
-| Como evitar que o token fique na URL/referrer?                       | Trocar o token por sessão automaticamente, remover a query da URL no mount e adicionar `<meta name="referrer" content="no-referrer">`.  |
-| O SPA já tem storage de sessão?                                      | Sim: `auth-storage.ts` + `AuthProvider.saveToken` (grava `localStorage` e atualiza o estado).                                            |
-| E2E pode rodar aqui?                                                 | Não. O runner Playwright não está ligado ao workspace; o spec será escrito e marcado `deferred`.                                       |
+| Pergunta                                            | Resposta adotada                                                                                                                         |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| O `consume` atual é atômico?                        | Não. `markUsed` é incondicional e fora de transação. Precisa de `UPDATE ... WHERE used_at IS NULL` + transação.                          |
+| Como confirmar o usuário?                           | Novo método `markEmailConfirmed(id, at)` em `AuthUserRepository`; o schema já tem `email_confirmed_at`, não há migration.                |
+| Como garantir RF-04 sem duplicar a regra de sessão? | Unidade de trabalho (`TransactionManager`) com transação ambiente; `SessionService` e repositórios participam da mesma transação.        |
+| O e-mail de nova sessão está ligado?                | Não. `SessionService.create` revoga e cria, mas nunca chama `sendNewSessionEmail`. Corrigir no serviço (também usado pela 004).          |
+| O que fazer se o e-mail de nova sessão falhar?      | Logar `auth.session.new_session_email_failed` e seguir; a sessão prevalece, igual ao padrão do sign-up.                                  |
+| Códigos HTTP do token inválido                      | DTO vazio/ausente → 400 `VALIDATION_ERROR`; token desconhecido/expirado/usado/de outro tipo → 410 `INVALID_TOKEN` com mensagem genérica. |
+| Como evitar que o token fique na URL/referrer?      | Trocar o token por sessão automaticamente, remover a query da URL no mount e adicionar `<meta name="referrer" content="no-referrer">`.   |
+| O SPA já tem storage de sessão?                     | Sim: `auth-storage.ts` + `AuthProvider.saveToken` (grava `localStorage` e atualiza o estado).                                            |
+| E2E pode rodar aqui?                                | Não. O runner Playwright não está ligado ao workspace; o spec será escrito e marcado `deferred`.                                         |
 
 ## Decisão arquitetural (ADR 0009)
 
@@ -126,14 +126,14 @@ npm.cmd run format:check
 
 ## Riscos e mitigação
 
-| Risco                                                        | Mitigação                                                                                  |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| Corrida entre duas confirmações                              | `UPDATE ... WHERE used_at IS NULL` dentro da transação; segunda transação afeta 0 linhas.   |
-| AsyncLocalStorage não propagar para chamadas async            | `storage.run(tx, work)` mantém o contexto por toda a cadeia de promises; coberto por teste. |
-| E-mail de nova sessão enviado antes do commit                | Sessão criada por último; risco documentado no ADR 0009.                                   |
-| StrictMode disparar o POST duas vezes no SPA                 | Ref de execução única por montagem + remoção imediata do token da URL.                     |
-| Testes de integração dependerem de Postgres                  | Todos os testes usam repositórios falsos e `InMemoryTransactionManager`; sem infra.        |
-| 004 reimplementar a regra de sessão                          | `SessionService` continua sendo o único caminho e agora envia o e-mail.                     |
+| Risco                                              | Mitigação                                                                                   |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Corrida entre duas confirmações                    | `UPDATE ... WHERE used_at IS NULL` dentro da transação; segunda transação afeta 0 linhas.   |
+| AsyncLocalStorage não propagar para chamadas async | `storage.run(tx, work)` mantém o contexto por toda a cadeia de promises; coberto por teste. |
+| E-mail de nova sessão enviado antes do commit      | Sessão criada por último; risco documentado no ADR 0009.                                    |
+| StrictMode disparar o POST duas vezes no SPA       | Ref de execução única por montagem + remoção imediata do token da URL.                      |
+| Testes de integração dependerem de Postgres        | Todos os testes usam repositórios falsos e `InMemoryTransactionManager`; sem infra.         |
+| 004 reimplementar a regra de sessão                | `SessionService` continua sendo o único caminho e agora envia o e-mail.                     |
 
 ## Critérios de aceite mapeados
 
