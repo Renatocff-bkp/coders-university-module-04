@@ -14,7 +14,7 @@ import { InvalidTokenError } from "../domain/errors";
 import { AuthGuard } from "./auth-guard";
 
 @Controller("auth")
-export class SignOutController {
+export class SignOutHandler {
   constructor(private readonly signOut: SignOutUseCase) {}
 
   @Post("sign-out")

@@ -15,7 +15,7 @@ import { INVALID_TOKEN_MESSAGE } from "./messages";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 
 @Controller("auth")
-export class ResetPasswordController {
+export class ResetPasswordHandler {
   constructor(private readonly resetPassword: ResetPasswordUseCase) {}
 
   @Post("reset-password")

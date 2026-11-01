@@ -13,7 +13,7 @@ import { GetSessionUseCase } from "../application/get-session.use-case";
 import { AuthGuard } from "./auth-guard";
 
 @Controller("auth")
-export class AuthSessionController {
+export class AuthSessionHandler {
   constructor(private readonly getSessionUseCase: GetSessionUseCase) {}
 
   @Get("session")

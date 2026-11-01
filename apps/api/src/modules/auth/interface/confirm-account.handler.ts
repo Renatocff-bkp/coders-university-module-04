@@ -16,7 +16,7 @@ import { ConfirmAccountDto } from "./dto/confirm-account.dto";
 import { INVALID_TOKEN_MESSAGE } from "./messages";
 
 @Controller("auth")
-export class ConfirmAccountController {
+export class ConfirmAccountHandler {
   constructor(private readonly confirmAccount: ConfirmAccountUseCase) {}
 
   @Post("confirm-account")

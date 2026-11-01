@@ -26,7 +26,7 @@ import { FakeEmailService } from "../testing/fake-email.service";
 import {
   EMAIL_NOT_CONFIRMED_MESSAGE,
   INVALID_CREDENTIALS_MESSAGE,
-} from "./sign-in.controller";
+} from "./sign-in.handler";
 
 class DeterministicPasswordHasher implements PasswordHasher {
   async hash(plainPassword: string): Promise<string> {
