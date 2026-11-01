@@ -74,6 +74,20 @@ services:
       - ./infra/observability/mimir/mimir.yaml:/etc/mimir/mimir.yaml:ro
       - mimir-data:/data/mimir
 
+  k6:
+    image: grafana/k6:2.3.0
+    profiles: ["loadtest"]
+    working_dir: /scripts
+    environment:
+      API_URL: ${K6_API_URL:-http://host.docker.internal:3002}
+      PROFILE: ${K6_PROFILE:-smoke}
+      K6_RUN_ID: ${K6_RUN_ID:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./load-tests:/scripts:ro
+    command: ["run", "/scripts/main.js"]
+
 volumes:
   grafana-data:
   loki-data:

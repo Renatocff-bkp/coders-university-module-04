@@ -14,6 +14,7 @@ Usar para gerenciar o ciclo de vida das features.
 | `feature-concept` | Stress-testar um plano com perguntas profundas antes de codar         |
 | `implement-me`    | Executar uma spec aprovada (orquestra `feature-concept` internamente) |
 | `orchestrate-me`  | Executar um lote de specs em paralelo, com um subagent por spec       |
+| `refactor-vertical-slices` | Auditar e refatorar slices para camadas/hexagonal, handlers 1:1 com use cases, gates, push e PR |
 | `skill-creator`   | Criar ou evoluir uma skill do projeto                                 |
 | `find-skills`     | Procurar skill existente no ecossistema antes de criar uma nova       |
 
@@ -42,7 +43,7 @@ Instalar skills do ecossistema sempre com o agente explícito:
 npx skills add <fonte> -a opencode
 ```
 
-`skills-lock.json` rastreia apenas as skills do ecossistema. As skills próprias do projeto (`breakdown-specs`, `create-spec`, `feature-concept`, `implement-me`, `orchestrate-me`, `refine-spec`) não estão no lock — são versionadas junto com `.agents/skills/`.
+`skills-lock.json` rastreia apenas as skills do ecossistema. As skills próprias do projeto (`breakdown-specs`, `create-spec`, `feature-concept`, `implement-me`, `orchestrate-me`, `refactor-vertical-slices`, `refine-spec`) não estão no lock — são versionadas junto com `.agents/skills/`.
 
 ## Comandos do projeto
 

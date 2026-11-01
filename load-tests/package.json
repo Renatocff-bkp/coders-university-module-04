@@ -1,0 +1,9 @@
+{
+  "name": "load-tests",
+  "private": true,
+  "type": "module",
+  "description": "k6 load tests for the API",
+  "scripts": {
+    "check": "node --test lib/data.test.mjs"
+  }
+}

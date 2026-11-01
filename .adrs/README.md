@@ -107,3 +107,4 @@ verdade, não o histórico da negociação.
 | [0010](./0010-resposta-distinta-para-conta-nao-confirmada.md)       | Resposta distinta para conta não confirmada no login             | accepted |
 | [0011](./0011-esqueci-a-senha-sem-aguardar-envio.md)                | Esqueci a senha responde antes da busca e do envio               | accepted |
 | [0012](./0012-troca-de-senha-revoga-sessoes-e-avisa-apos-commit.md) | Troca de senha revoga sessões na transação e avisa após o commit | accepted |
+| [0013](./0013-testes-de-carga-com-k6.md)                            | Testes de carga com k6, seed direto no Postgres e pools isolados | accepted |

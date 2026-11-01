@@ -23,6 +23,11 @@
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
     "db:generate": "npm run db:generate --workspace=api",
+    "loadtest:seed": "node load-tests/seed.mjs",
+    "loadtest:check": "node --test load-tests/lib/data.test.mjs",
+    "loadtest:smoke": "docker compose --profile loadtest run --rm -e PROFILE=smoke k6",
+    "loadtest:load": "docker compose --profile loadtest run --rm -e PROFILE=load k6",
+    "loadtest:stress": "docker compose --profile loadtest run --rm -e PROFILE=stress k6",
     "lint:commit": "commitlint --last",
     "prepare": "husky"
   },
