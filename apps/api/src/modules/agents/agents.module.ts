@@ -1,15 +1,15 @@
 import { Module } from "@nestjs/common";
 
-import {
-  ListExpertsUseCase,
-  GetExpertUseCase,
-  GetSuggestionsUseCase,
-} from "./application/list-experts.use-case";
+import { ListExpertsUseCase } from "./application/list-experts.use-case";
+import { GetExpertUseCase } from "./application/get-expert.use-case";
+import { GetSuggestionsUseCase } from "./application/get-suggestions.use-case";
 import { ExpertCatalogService } from "./application/expert-catalog.service";
-import { ExpertsHandler } from "./interface/experts.handler";
+import { ListExpertsHandler } from "./interface/list-experts.handler";
+import { GetExpertHandler } from "./interface/get-expert.handler";
+import { GetSuggestionsHandler } from "./interface/get-suggestions.handler";
 
 @Module({
-  controllers: [ExpertsHandler],
+  controllers: [ListExpertsHandler, GetExpertHandler, GetSuggestionsHandler],
   providers: [
     ListExpertsUseCase,
     GetExpertUseCase,
