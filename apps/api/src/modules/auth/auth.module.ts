@@ -4,7 +4,9 @@ import { createTransport } from "nodemailer";
 import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
 import { AuthSessionController } from "./interface/auth-session.controller";
+import { ConfirmAccountController } from "./interface/confirm-account.controller";
 import { SignUpController } from "./interface/sign-up.controller";
+import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
 import { SessionService } from "./application/session.service";
 import { SignUpUseCase } from "./application/sign-up.use-case";
@@ -17,6 +19,7 @@ import {
   PASSWORD_HASHER,
   SESSION_TTL_MS,
   TOKEN_GENERATOR,
+  TRANSACTION_MANAGER,
 } from "./auth.tokens";
 import { systemClock } from "./domain/clock";
 import type { EmailService } from "./domain/email-service";
@@ -25,16 +28,23 @@ import { CryptoTokenGenerator } from "./infrastructure/crypto-token-generator";
 import { DrizzleAuthSessionRepository } from "./infrastructure/drizzle-auth-session.repository";
 import { DrizzleAuthTokenRepository } from "./infrastructure/drizzle-auth-token.repository";
 import { DrizzleAuthUserRepository } from "./infrastructure/drizzle-auth-user.repository";
+import { DrizzleTransactionManager } from "./infrastructure/drizzle-transaction-manager";
 import { MailtrapEmailService } from "./infrastructure/mailtrap-email.service";
 import { ResendEmailService } from "./infrastructure/resend-email.service";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AuthSessionController, SignUpController],
+  controllers: [
+    AuthSessionController,
+    SignUpController,
+    ConfirmAccountController,
+  ],
   providers: [
+    DrizzleTransactionManager,
     DrizzleAuthUserRepository,
     DrizzleAuthSessionRepository,
     DrizzleAuthTokenRepository,
+    { provide: TRANSACTION_MANAGER, useExisting: DrizzleTransactionManager },
     { provide: AUTH_USER_REPOSITORY, useExisting: DrizzleAuthUserRepository },
     {
       provide: AUTH_SESSION_REPOSITORY,
@@ -85,6 +95,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     SessionService,
     OneTimeTokenService,
     SignUpUseCase,
+    ConfirmAccountUseCase,
   ],
   exports: [
     AUTH_USER_REPOSITORY,
