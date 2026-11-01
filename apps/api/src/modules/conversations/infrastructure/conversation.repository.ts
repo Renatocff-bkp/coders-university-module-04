@@ -7,8 +7,10 @@ import {
 } from "../../../shared/database/database.module";
 import { conversations, messages } from "../../../shared/database/schema";
 
+import type { ConversationRepository as ConversationRepositoryPort } from "../domain/conversation-repository";
+
 @Injectable()
-export class ConversationRepository {
+export class ConversationRepository implements ConversationRepositoryPort {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async create(input: {
