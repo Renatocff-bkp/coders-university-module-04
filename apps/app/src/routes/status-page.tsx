@@ -1,6 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
-import { Button } from "@repo/ui";
+import {
+  Button,
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@repo/ui";
 
 import { ApiError, getHealth, getPing } from "../shared/api-client";
 
@@ -14,7 +22,6 @@ export default function StatusPage() {
     queryKey: ["api", "health"],
     queryFn: () => getHealth(),
   });
-
   const ping = useQuery({
     queryKey: ["api", "ping"],
     queryFn: async () => {
@@ -55,79 +62,124 @@ export default function StatusPage() {
   };
 
   return (
-    <main className="min-h-dvh bg-linen text-foreground">
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-16 sm:py-24">
-        <header className="flex flex-col gap-3">
+    <main className="min-h-dvh bg-background text-foreground">
+      <header className="border-b border-border/60 bg-background/80 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <Link
+              to="/app"
+              className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            >
+              ← Back to workspace
+            </Link>
+          </div>
+          <Badge
+            variant={
+              operational ? "default" : failure ? "destructive" : "secondary"
+            }
+            className="gap-2"
+          >
+            <span
+              aria-hidden="true"
+              className={`size-1.5 rounded-full ${
+                operational
+                  ? "bg-primary-foreground"
+                  : failure
+                    ? "bg-destructive-foreground"
+                    : "bg-muted-foreground"
+              }`}
+            />
+            {statusMessage}
+          </Badge>
+        </div>
+      </header>
+
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <section className="mb-8">
           <p className="text-xs font-medium tracking-[0.16em] text-powder-blue">
             Operational status
           </p>
-          <h1 className="font-sans text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="mt-2 font-sans text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
             Service status
           </h1>
-          <p className="max-w-prose text-base text-muted-foreground">
+          <p className="mt-2 max-w-prose text-base text-muted-foreground">
             Live checks from the local API. Each request sends a generated{" "}
-            <code className="font-mono text-sm">x-request-id</code> so backend
-            logs and traces can be correlated with the client.
+            <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">
+              x-request-id
+            </code>{" "}
+            so backend logs and traces can be correlated with the client.
           </p>
-        </header>
+        </section>
 
-        <section
-          aria-labelledby="current-status"
-          className="rounded-2xl border border-alice-blue bg-card p-6 shadow-sm sm:p-8"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 id="current-status" className="text-lg font-semibold">
-              Current status
-            </h2>
+        <Card className="border-border/60 shadow-sm">
+          <CardHeader className="flex flex-row items-center justify-between gap-4">
+            <CardTitle className="text-lg">Current status</CardTitle>
             <p
               role="status"
               aria-live="polite"
-              className="inline-flex items-center gap-2 rounded-full border border-alice-blue bg-secondary px-3 py-1 text-sm font-medium"
+              className="text-sm font-medium text-muted-foreground"
             >
-              <span
-                aria-hidden="true"
-                className={`size-2 rounded-full ${
-                  operational ? "bg-primary" : "bg-destructive"
-                }`}
-              />
               {statusMessage}
             </p>
-          </div>
+          </CardHeader>
 
-          {failure ? (
-            <p role="alert" className="mt-4 text-sm text-destructive">
-              {errorMessage}
-            </p>
-          ) : null}
-
-          <dl className="mt-6 divide-y divide-alice-blue">
-            {STATUS_CHECKS.map((check) => (
+          <CardContent>
+            {failure ? (
               <div
-                key={check.id}
-                className="flex items-baseline justify-between gap-4 py-4"
+                role="alert"
+                className="mb-4 rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
               >
-                <dt className="text-sm font-medium">{check.label}</dt>
-                <dd className="font-mono text-sm text-muted-foreground">
-                  {check.id === "health"
-                    ? health.data
-                      ? `ok · v${health.data.version} · uptime ${health.data.uptimeSeconds}s`
-                      : "checking…"
-                    : ping.data
-                      ? `pong · ${ping.data.latencyMs ?? 0}ms`
-                      : "checking…"}
-                </dd>
+                {errorMessage}
               </div>
-            ))}
-          </dl>
+            ) : null}
 
-          {failure ? (
-            <div className="mt-6">
-              <Button variant="outline" size="sm" onClick={retry}>
-                Retry
-              </Button>
-            </div>
-          ) : null}
-        </section>
+            <dl className="divide-y divide-border/60">
+              {STATUS_CHECKS.map((check) => {
+                const ok = check.id === "health" ? healthOk : pingOk;
+                const pending =
+                  check.id === "health" ? health.isPending : ping.isPending;
+
+                return (
+                  <div
+                    key={check.id}
+                    className="flex items-center justify-between gap-4 py-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        aria-hidden="true"
+                        className={`size-2 rounded-full ${
+                          pending
+                            ? "bg-muted-foreground/40"
+                            : ok
+                              ? "bg-primary"
+                              : "bg-destructive"
+                        }`}
+                      />
+                      <dt className="text-sm font-medium">{check.label}</dt>
+                    </div>
+                    <dd className="font-mono text-sm text-muted-foreground">
+                      {check.id === "health"
+                        ? health.data
+                          ? `ok · v${health.data.version} · uptime ${health.data.uptimeSeconds}s`
+                          : "checking…"
+                        : ping.data
+                          ? `pong · ${ping.data.latencyMs ?? 0}ms`
+                          : "checking…"}
+                    </dd>
+                  </div>
+                );
+              })}
+            </dl>
+
+            {failure ? (
+              <div className="mt-6">
+                <Button variant="outline" size="sm" onClick={retry}>
+                  Retry
+                </Button>
+              </div>
+            ) : null}
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

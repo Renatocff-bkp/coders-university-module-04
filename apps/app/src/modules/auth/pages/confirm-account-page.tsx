@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
   Skeleton,
@@ -14,6 +13,7 @@ import {
 
 import { confirmAccount } from "../api/confirm-account";
 import { useAuth } from "../AuthProvider";
+import { AuthLayout } from "../../../components/auth-layout";
 
 const INVALID_LINK_MESSAGE =
   "This confirmation link is invalid, expired or has already been used.";
@@ -53,65 +53,88 @@ export default function ConfirmAccountPage() {
   }, [searchParams, setSearchParams, saveToken, navigate]);
 
   return (
-    <main className="min-h-dvh bg-linen text-foreground">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16">
-        <header className="flex flex-col gap-3">
-          <p className="text-xs font-medium tracking-[0.16em] text-powder-blue">
-            Authentication
-          </p>
-          <h1 className="font-sans text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Confirm your account
-          </h1>
-        </header>
-
-        <Card>
-          {errorMessage === null ? (
-            <>
-              <CardHeader>
-                <CardTitle className="text-lg">Confirming your email</CardTitle>
-                <CardDescription>
-                  Hold on while we activate your account and sign you in.
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <div
-                  role="status"
-                  aria-live="polite"
-                  className="flex flex-col gap-3"
+    <AuthLayout
+      eyebrow="Authentication"
+      title="Confirm your account"
+      description="We are activating your account and signing you in."
+    >
+      <Card className="border-border/60 shadow-sm">
+        {errorMessage === null ? (
+          <>
+            <CardHeader className="gap-3">
+              <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-6"
+                  aria-hidden="true"
                 >
-                  <span className="sr-only">Confirming your account</span>
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              </CardContent>
-            </>
-          ) : (
-            <>
-              <CardHeader>
-                <CardTitle className="text-lg">
-                  We could not confirm your account
-                </CardTitle>
-              </CardHeader>
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+              </div>
+              <CardTitle className="text-lg">Confirming your email</CardTitle>
+              <CardDescription>
+                Hold on while we activate your account and sign you in.
+              </CardDescription>
+            </CardHeader>
 
-              <CardContent>
-                <div
-                  role="alert"
-                  className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+            <CardContent>
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex flex-col gap-3"
+              >
+                <span className="sr-only">Confirming your account</span>
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            </CardContent>
+          </>
+        ) : (
+          <>
+            <CardHeader className="gap-3">
+              <div className="inline-flex size-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="size-6"
+                  aria-hidden="true"
                 >
-                  <p>{errorMessage}</p>
-                </div>
-              </CardContent>
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m15 9-6 6m0-6 6 6" />
+                </svg>
+              </div>
+              <CardTitle className="text-lg">
+                We could not confirm your account
+              </CardTitle>
+            </CardHeader>
 
-              <CardFooter className="justify-center border-t">
-                <Button asChild variant="outline">
-                  <Link to="/auth/sign-in">Go to sign in</Link>
-                </Button>
-              </CardFooter>
-            </>
-          )}
-        </Card>
-      </div>
-    </main>
+            <CardContent>
+              <div
+                role="alert"
+                className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                <p>{errorMessage}</p>
+              </div>
+            </CardContent>
+
+            <div className="px-6 pb-6">
+              <Button asChild variant="outline" className="h-10 w-full">
+                <Link to="/auth/sign-in">Go to sign in</Link>
+              </Button>
+            </div>
+          </>
+        )}
+      </Card>
+    </AuthLayout>
   );
 }

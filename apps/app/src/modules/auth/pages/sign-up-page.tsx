@@ -7,17 +7,7 @@ import {
 } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-} from "@repo/ui";
+import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 
 import { ApiError } from "../../../shared/api-client";
 import { signUp } from "../api/sign-up";
@@ -29,6 +19,7 @@ import {
   type SignUpFieldErrors,
   type SignUpFormValues,
 } from "../validation";
+import { AuthLayout } from "../../../components/auth-layout";
 
 const EMPTY_VALUES: SignUpFormValues = {
   firstName: "",
@@ -80,6 +71,7 @@ function FormField({
         ref={inputRef}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
+        className="h-11"
       />
       {error ? (
         <p id={errorId} className="text-sm text-destructive">
@@ -206,125 +198,112 @@ export default function SignUpPage() {
   const hasErrors = Object.keys(errors).length > 0;
 
   return (
-    <main className="min-h-dvh bg-linen text-foreground">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16">
-        <header className="flex flex-col gap-3">
-          <p className="text-xs font-medium tracking-[0.16em] text-powder-blue">
-            Authentication
-          </p>
-          <h1 className="font-sans text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Create your account
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Start with your name, email and a secure password.
-          </p>
-        </header>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Sign up</CardTitle>
-            <CardDescription>
-              We will send a confirmation link to your inbox. Your account is
-              only activated after you open it.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <form
-              className="flex flex-col gap-5"
-              onSubmit={handleSubmit}
-              noValidate
-              aria-busy={isSubmitting}
-            >
-              {hasErrors || formError ? (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-                >
-                  {formError ? <p>{formError}</p> : null}
-                  {hasErrors ? (
-                    <>
-                      <p>Please fix the highlighted fields.</p>
-                      <ul className="mt-2 list-disc pl-5">
-                        {SIGN_UP_FIELD_ORDER.filter(
-                          (field) => errors[field] !== undefined,
-                        ).map((field) => (
-                          <li key={field}>{errors[field]}</li>
-                        ))}
-                      </ul>
-                    </>
-                  ) : null}
-                </div>
-              ) : null}
-
-              <div className="grid gap-5 sm:grid-cols-2">
-                <FormField
-                  field="firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  value={values.firstName}
-                  error={errors.firstName}
-                  inputRef={firstNameRef}
-                  onChange={handleChange("firstName")}
-                />
-                <FormField
-                  field="lastName"
-                  type="text"
-                  autoComplete="family-name"
-                  value={values.lastName}
-                  error={errors.lastName}
-                  inputRef={lastNameRef}
-                  onChange={handleChange("lastName")}
-                />
+    <AuthLayout
+      eyebrow="Authentication"
+      title="Create your account"
+      description="Start with your name, email and a secure password."
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link
+            to="/auth/sign-in"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+        </>
+      }
+    >
+      <Card className="border-border/60 shadow-sm">
+        <CardContent className="pt-6">
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleSubmit}
+            noValidate
+            aria-busy={isSubmitting}
+          >
+            {hasErrors || formError ? (
+              <div
+                role="alert"
+                className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                {formError ? <p>{formError}</p> : null}
+                {hasErrors ? (
+                  <>
+                    <p>Please fix the highlighted fields.</p>
+                    <ul className="mt-2 list-disc pl-5">
+                      {SIGN_UP_FIELD_ORDER.filter(
+                        (field) => errors[field] !== undefined,
+                      ).map((field) => (
+                        <li key={field}>{errors[field]}</li>
+                      ))}
+                    </ul>
+                  </>
+                ) : null}
               </div>
+            ) : null}
 
+            <div className="grid gap-5 sm:grid-cols-2">
               <FormField
-                field="email"
-                type="email"
-                autoComplete="email"
-                value={values.email}
-                error={errors.email}
-                inputRef={emailRef}
-                onChange={handleChange("email")}
+                field="firstName"
+                type="text"
+                autoComplete="given-name"
+                value={values.firstName}
+                error={errors.firstName}
+                inputRef={firstNameRef}
+                onChange={handleChange("firstName")}
               />
-
               <FormField
-                field="password"
-                type="password"
-                autoComplete="new-password"
-                value={values.password}
-                error={errors.password}
-                inputRef={passwordRef}
-                onChange={handleChange("password")}
+                field="lastName"
+                type="text"
+                autoComplete="family-name"
+                value={values.lastName}
+                error={errors.lastName}
+                inputRef={lastNameRef}
+                onChange={handleChange("lastName")}
               />
+            </div>
 
-              <FormField
-                field="passwordConfirmation"
-                type="password"
-                autoComplete="new-password"
-                value={values.passwordConfirmation}
-                error={errors.passwordConfirmation}
-                inputRef={passwordConfirmationRef}
-                onChange={handleChange("passwordConfirmation")}
-              />
+            <FormField
+              field="email"
+              type="email"
+              autoComplete="email"
+              value={values.email}
+              error={errors.email}
+              inputRef={emailRef}
+              onChange={handleChange("email")}
+            />
 
-              <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? "Creating account…" : "Create account"}
-              </Button>
-            </form>
-          </CardContent>
+            <FormField
+              field="password"
+              type="password"
+              autoComplete="new-password"
+              value={values.password}
+              error={errors.password}
+              inputRef={passwordRef}
+              onChange={handleChange("password")}
+            />
 
-          <CardFooter className="justify-center border-t text-sm text-muted-foreground">
-            <span>Already have an account?</span>
-            <Link
-              to="/auth/sign-in"
-              className="ml-1 font-medium text-primary underline-offset-4 hover:underline"
+            <FormField
+              field="passwordConfirmation"
+              type="password"
+              autoComplete="new-password"
+              value={values.passwordConfirmation}
+              error={errors.passwordConfirmation}
+              inputRef={passwordConfirmationRef}
+              onChange={handleChange("passwordConfirmation")}
+            />
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-11 w-full"
             >
-              Sign in
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    </main>
+              {isSubmitting ? "Creating account…" : "Create account"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </AuthLayout>
   );
 }

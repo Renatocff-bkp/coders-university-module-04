@@ -8,17 +8,7 @@ import {
 } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-} from "@repo/ui";
+import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 
 import { ApiError } from "../../../shared/api-client";
 import { clearAuthToken } from "../auth-storage";
@@ -29,6 +19,7 @@ import {
   type ResetPasswordFieldErrors,
   type ResetPasswordFormValues,
 } from "../validation";
+import { AuthLayout } from "../../../components/auth-layout";
 
 const EMPTY_VALUES: ResetPasswordFormValues = {
   password: "",
@@ -150,102 +141,87 @@ export default function ResetPasswordPage() {
   };
 
   return (
-    <main className="min-h-dvh bg-linen text-foreground">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16">
-        <header className="flex flex-col gap-3">
-          <p className="text-xs font-medium tracking-[0.16em] text-powder-blue">
-            Authentication
-          </p>
-          <h1 className="font-sans text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Reset your password
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Choose a new password for your account.
-          </p>
-        </header>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">New password</CardTitle>
-            <CardDescription>
-              Use at least 8 characters. Every active session will be signed
-              out.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            {invalidLink ? (
-              <div
-                role="alert"
-                className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-              >
-                <p>{INVALID_LINK_MESSAGE}</p>
-              </div>
-            ) : (
-              <form
-                className="flex flex-col gap-5"
-                onSubmit={handleSubmit}
-                noValidate
-                aria-busy={isSubmitting}
-              >
-                {formError ? (
-                  <div
-                    role="alert"
-                    className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-                  >
-                    {formError}
-                  </div>
-                ) : null}
-
-                {FIELD_ORDER.map((field) => (
-                  <div key={field} className="flex flex-col gap-2">
-                    <Label htmlFor={field}>{FIELD_LABELS[field]}</Label>
-                    <Input
-                      id={field}
-                      name={field}
-                      type="password"
-                      autoComplete="new-password"
-                      value={values[field]}
-                      onChange={handleChange(field)}
-                      ref={fieldRefs[field]}
-                      aria-invalid={errors[field] ? true : undefined}
-                      aria-describedby={
-                        errors[field] ? `${field}-error` : undefined
-                      }
-                    />
-                    {errors[field] ? (
-                      <p
-                        id={`${field}-error`}
-                        role="alert"
-                        className="text-sm text-destructive"
-                      >
-                        {errors[field]}
-                      </p>
-                    ) : null}
-                  </div>
-                ))}
-
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full"
-                >
-                  {isSubmitting ? "Saving new password…" : "Reset password"}
-                </Button>
-              </form>
-            )}
-          </CardContent>
-
-          <CardFooter className="justify-center border-t text-sm text-muted-foreground">
-            <Link
-              to="/auth/forgot-password"
-              className="font-medium text-primary underline-offset-4 hover:underline"
+    <AuthLayout
+      eyebrow="Authentication"
+      title="Reset your password"
+      description="Choose a new password for your account."
+      footer={
+        <>
+          Need a new link?{" "}
+          <Link
+            to="/auth/forgot-password"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Request a new reset link
+          </Link>
+        </>
+      }
+    >
+      <Card className="border-border/60 shadow-sm">
+        <CardContent className="pt-6">
+          {invalidLink ? (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
             >
-              Request a new reset link
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    </main>
+              <p>{INVALID_LINK_MESSAGE}</p>
+            </div>
+          ) : (
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={handleSubmit}
+              noValidate
+              aria-busy={isSubmitting}
+            >
+              {formError ? (
+                <div
+                  role="alert"
+                  className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+                >
+                  {formError}
+                </div>
+              ) : null}
+
+              {FIELD_ORDER.map((field) => (
+                <div key={field} className="flex flex-col gap-2">
+                  <Label htmlFor={field}>{FIELD_LABELS[field]}</Label>
+                  <Input
+                    id={field}
+                    name={field}
+                    type="password"
+                    autoComplete="new-password"
+                    value={values[field]}
+                    onChange={handleChange(field)}
+                    ref={fieldRefs[field]}
+                    aria-invalid={errors[field] ? true : undefined}
+                    aria-describedby={
+                      errors[field] ? `${field}-error` : undefined
+                    }
+                    className="h-11"
+                  />
+                  {errors[field] ? (
+                    <p
+                      id={`${field}-error`}
+                      role="alert"
+                      className="text-sm text-destructive"
+                    >
+                      {errors[field]}
+                    </p>
+                  ) : null}
+                </div>
+              ))}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 w-full"
+              >
+                {isSubmitting ? "Saving new password…" : "Reset password"}
+              </Button>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </AuthLayout>
   );
 }

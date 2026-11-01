@@ -7,17 +7,7 @@ import {
 } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Input,
-  Label,
-} from "@repo/ui";
+import { Button, Card, CardContent, Input, Label } from "@repo/ui";
 
 import { ApiError } from "../../../shared/api-client";
 import { signIn } from "../api/sign-in";
@@ -28,6 +18,7 @@ import {
   type SignInFieldErrors,
   type SignInFormValues,
 } from "../validation";
+import { AuthLayout } from "../../../components/auth-layout";
 
 const EMPTY_VALUES: SignInFormValues = {
   email: "",
@@ -79,6 +70,7 @@ function FormField({
         ref={inputRef}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? errorId : undefined}
+        className="h-11"
       />
       {error ? (
         <p id={errorId} className="text-sm text-destructive">
@@ -172,109 +164,97 @@ export default function SignInPage() {
   const showSessionEnded = sessionEnded && formError === null;
 
   return (
-    <main className="min-h-dvh bg-linen text-foreground">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 px-4 py-12 sm:px-6 sm:py-16">
-        <header className="flex flex-col gap-3">
-          <p className="text-xs font-medium tracking-[0.16em] text-powder-blue">
-            Authentication
-          </p>
-          <h1 className="font-sans text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
-            Sign in
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Use the email and password of your account.
-          </p>
-        </header>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Welcome back</CardTitle>
-            <CardDescription>
-              Signing in here ends any session you have open on another device.
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent>
-            <form
-              className="flex flex-col gap-5"
-              onSubmit={handleSubmit}
-              noValidate
-              aria-busy={isSubmitting}
-            >
-              {passwordReset && formError === null ? (
-                <div
-                  role="status"
-                  aria-live="polite"
-                  className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground"
-                >
-                  <p>{PASSWORD_RESET_MESSAGE}</p>
-                </div>
-              ) : null}
-
-              {showSessionEnded ? (
-                <div
-                  role="status"
-                  aria-live="polite"
-                  className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground"
-                >
-                  <p>{SESSION_ENDED_MESSAGE}</p>
-                </div>
-              ) : null}
-
-              {formError ? (
-                <div
-                  role="alert"
-                  className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
-                >
-                  <p>{formError}</p>
-                </div>
-              ) : null}
-
-              <FormField
-                field="email"
-                type="email"
-                autoComplete="email"
-                value={values.email}
-                error={errors.email}
-                inputRef={emailRef}
-                onChange={handleChange("email")}
-              />
-
-              <div className="flex flex-col gap-2">
-                <FormField
-                  field="password"
-                  type="password"
-                  autoComplete="current-password"
-                  value={values.password}
-                  error={errors.password}
-                  inputRef={passwordRef}
-                  onChange={handleChange("password")}
-                />
-                <Link
-                  to="/auth/forgot-password"
-                  className="self-end text-sm font-medium text-primary underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </Link>
+    <AuthLayout
+      eyebrow="Authentication"
+      title="Welcome back"
+      description="Use the email and password of your account."
+      footer={
+        <>
+          New here?{" "}
+          <Link
+            to="/auth/sign-up"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      <Card className="border-border/60 shadow-sm">
+        <CardContent className="pt-6">
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleSubmit}
+            noValidate
+            aria-busy={isSubmitting}
+          >
+            {passwordReset && formError === null ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground"
+              >
+                <p>{PASSWORD_RESET_MESSAGE}</p>
               </div>
+            ) : null}
 
-              <Button type="submit" disabled={isSubmitting} className="w-full">
-                {isSubmitting ? "Signing in..." : "Sign in"}
-              </Button>
-            </form>
-          </CardContent>
+            {showSessionEnded ? (
+              <div
+                role="status"
+                aria-live="polite"
+                className="rounded-lg border border-border bg-muted p-3 text-sm text-foreground"
+              >
+                <p>{SESSION_ENDED_MESSAGE}</p>
+              </div>
+            ) : null}
 
-          <CardFooter className="justify-center border-t text-sm text-muted-foreground">
-            <span>New here?</span>
-            <Link
-              to="/auth/sign-up"
-              className="ml-1 font-medium text-primary underline-offset-4 hover:underline"
+            {formError ? (
+              <div
+                role="alert"
+                className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                <p>{formError}</p>
+              </div>
+            ) : null}
+
+            <FormField
+              field="email"
+              type="email"
+              autoComplete="email"
+              value={values.email}
+              error={errors.email}
+              inputRef={emailRef}
+              onChange={handleChange("email")}
+            />
+
+            <div className="flex flex-col gap-2">
+              <FormField
+                field="password"
+                type="password"
+                autoComplete="current-password"
+                value={values.password}
+                error={errors.password}
+                inputRef={passwordRef}
+                onChange={handleChange("password")}
+              />
+              <Link
+                to="/auth/forgot-password"
+                className="self-end text-sm font-medium text-primary underline-offset-4 hover:underline"
+              >
+                Forgot your password?
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="h-11 w-full"
             >
-              Create an account
-            </Link>
-          </CardFooter>
-        </Card>
-      </div>
-    </main>
+              {isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </AuthLayout>
   );
 }

@@ -51,6 +51,9 @@ export {
   SelectTrigger,
   SelectValue,
 } from "./components/select";
+export { Alert, AlertDescription, AlertTitle } from "./components/alert";
+export { Badge, badgeVariants } from "./components/badge";
+export { Separator } from "./components/separator";
 export { Skeleton } from "./components/skeleton";
 export { Toaster } from "./components/sonner";
 export {
