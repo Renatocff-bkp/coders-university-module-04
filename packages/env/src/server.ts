@@ -63,6 +63,15 @@ export const serverEnvSchema = z.object({
     .min(1, "MAILTRAP_SMTP_PASS is required")
     .default("pass"),
   RESEND_API_KEY: z.string().min(1, "RESEND_API_KEY is required").default(""),
+  WEAVIATE_URL: z
+    .string()
+    .url("WEAVIATE_URL must be a valid URL")
+    .default("http://localhost:8080"),
+  OPENAI_API_KEY: z.string().default(""),
+  GOOGLE_API_KEY: z.string().default(""),
+  LANGSMITH_API_KEY: z.string().default(""),
+  LANGSMITH_PROJECT: z.string().min(1).default("coders-university"),
+  LANGSMITH_TRACING: z.enum(["true", "false"]).default("false"),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;

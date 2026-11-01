@@ -3,6 +3,8 @@ import {
   check,
   index,
   inet,
+  integer,
+  jsonb,
   pgTable,
   primaryKey,
   text,
@@ -125,7 +127,115 @@ export const authTokens = pgTable(
   ],
 );
 
+export const connectors = pgTable(
+  "connectors",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    organizationId: uuid("organization_id").references(() => organizations.id, {
+      onDelete: "cascade",
+    }),
+    type: text("type").notNull(),
+    name: text("name").notNull(),
+    sourceHash: text("source_hash").notNull(),
+    status: text("status").notNull().default("pending"),
+    mimeType: text("mime_type"),
+    sizeBytes: integer("size_bytes"),
+    url: text("url"),
+    content: text("content"),
+    errorMessage: text("error_message"),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+  },
+  (table) => [
+    index("connectors_user_id_idx").on(table.userId),
+    index("connectors_user_hash_idx").on(table.userId, table.sourceHash),
+    uniqueIndex("connectors_user_hash_unique_idx").on(
+      table.userId,
+      table.sourceHash,
+    ),
+  ],
+);
+
+export const conversations = pgTable(
+  "conversations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    expertKey: text("expert_key").notNull(),
+    title: text("title"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("conversations_user_expert_idx").on(table.userId, table.expertKey),
+  ],
+);
+
+export const messages = pgTable(
+  "messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    conversationId: uuid("conversation_id")
+      .notNull()
+      .references(() => conversations.id, { onDelete: "cascade" }),
+    role: text("role").notNull(),
+    content: text("content").notNull(),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("messages_conversation_created_idx").on(
+      table.conversationId,
+      table.createdAt,
+    ),
+  ],
+);
+
+export const mediaAssets = pgTable(
+  "media_assets",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => authUsers.id, { onDelete: "cascade" }),
+    messageId: uuid("message_id").references(() => messages.id, {
+      onDelete: "set null",
+    }),
+    type: text("type").notNull(),
+    mimeType: text("mime_type").notNull(),
+    data: text("data"),
+    url: text("url"),
+    prompt: text("prompt").notNull(),
+    model: text("model").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [index("media_assets_user_id_idx").on(table.userId)],
+);
+
 export type Organization = typeof organizations.$inferSelect;
 export type AuthUserRow = typeof authUsers.$inferSelect;
 export type AuthSessionRow = typeof authSessions.$inferSelect;
 export type AuthTokenRow = typeof authTokens.$inferSelect;
+export type ConnectorRow = typeof connectors.$inferSelect;
+export type ConversationRow = typeof conversations.$inferSelect;
+export type MessageRow = typeof messages.$inferSelect;
+export type MediaAssetRow = typeof mediaAssets.$inferSelect;

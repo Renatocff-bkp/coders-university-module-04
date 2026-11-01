@@ -14,11 +14,17 @@ Agentes de IA que atuam como especialistas em áreas específicas, conectados a 
 
 ## Personas (Agentes)
 
-| Agente     | Especialidade                           |
-| ---------- | --------------------------------------- |
-| CEO Expert | Visão estratégica, negócios, resultados |
-| CMO Expert | Marketing, growth, marca                |
-| CTO Expert | Tecnologia, arquitetura, engenharia     |
+| Agente                    | Especialidade                           |
+| ------------------------- | --------------------------------------- |
+| CEO Expert                | Visão estratégica, negócios, resultados |
+| CMO Expert                | Marketing, growth, marca                |
+| CTO Expert                | Tecnologia, arquitetura, engenharia     |
+| CFO Expert                | Finanças, orçamento, análise financeira |
+| COO Expert                | Operações, processos, eficiência        |
+| CPO Expert                | Produto, roadmap, valor ao usuário      |
+| Sales Director            | Vendas, pipeline, receita               |
+| Customer Success Director | Retenção, satisfação, sucesso           |
+| Customer Hero Director    | Advocacy e suporte excepcional          |
 
 ## Fontes de dados (conectores)
 
@@ -30,7 +36,12 @@ Os agentes consomem dados de ferramentas externas:
 - Jira
 - ClickUp
 - PDF
+- TXT
 - Markdown
+- Imagens (jpg, jpeg, png)
+- Vídeos (mp4)
+- Áudio (mp3)
+- URLs externas
 - Linea
 
 ## Status atual

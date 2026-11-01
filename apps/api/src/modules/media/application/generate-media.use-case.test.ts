@@ -1,0 +1,21 @@
+import { describe, expect, it, vi } from "vitest";
+
+import { GenerateMediaUseCase } from "./generate-media.use-case";
+
+describe("GenerateMediaUseCase", () => {
+  it("throws when no api key for image", async () => {
+    const repo = { create: vi.fn() } as any;
+    const uc = new GenerateMediaUseCase(repo);
+    await expect(
+      uc.generateImage({ userId: "u1", prompt: "a cat" }),
+    ).rejects.toThrow();
+  });
+
+  it("video generation not implemented", async () => {
+    const repo = { create: vi.fn() } as any;
+    const uc = new GenerateMediaUseCase(repo);
+    await expect(
+      uc.generateVideo({ userId: "u1", prompt: "a video" }),
+    ).rejects.toThrow();
+  });
+});
