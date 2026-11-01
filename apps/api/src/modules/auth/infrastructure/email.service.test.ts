@@ -135,6 +135,8 @@ describe("FakeEmailService", () => {
       userId: "user-1",
       email: "user@example.com",
       sessionId: "session-42",
+      createdAt: new Date("2026-10-31T14:30:00.000Z"),
+      userAgent: "vitest",
     });
     await fake.sendPasswordResetEmail({
       userId: "user-1",

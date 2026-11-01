@@ -5,10 +5,14 @@ import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
 import { AuthSessionController } from "./interface/auth-session.controller";
 import { ConfirmAccountController } from "./interface/confirm-account.controller";
+import { SignInController } from "./interface/sign-in.controller";
+import { SignOutController } from "./interface/sign-out.controller";
 import { SignUpController } from "./interface/sign-up.controller";
 import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
 import { SessionService } from "./application/session.service";
+import { SignInUseCase } from "./application/sign-in.use-case";
+import { SignOutUseCase } from "./application/sign-out.use-case";
 import { SignUpUseCase } from "./application/sign-up.use-case";
 import {
   AUTH_SESSION_REPOSITORY,
@@ -38,6 +42,8 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     AuthSessionController,
     SignUpController,
     ConfirmAccountController,
+    SignInController,
+    SignOutController,
   ],
   providers: [
     DrizzleTransactionManager,
@@ -96,6 +102,8 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     OneTimeTokenService,
     SignUpUseCase,
     ConfirmAccountUseCase,
+    SignInUseCase,
+    SignOutUseCase,
   ],
   exports: [
     AUTH_USER_REPOSITORY,
