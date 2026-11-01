@@ -108,3 +108,5 @@ verdade, não o histórico da negociação.
 | [0011](./0011-esqueci-a-senha-sem-aguardar-envio.md)                | Esqueci a senha responde antes da busca e do envio               | accepted |
 | [0012](./0012-troca-de-senha-revoga-sessoes-e-avisa-apos-commit.md) | Troca de senha revoga sessões na transação e avisa após o commit | accepted |
 | [0013](./0013-testes-de-carga-com-k6.md)                            | Testes de carga com k6, seed direto no Postgres e pools isolados | accepted |
+| [0014](./0014-request-handler-por-endpoint-e-use-case-1-para-1.md)  | Request handler por endpoint e use case 1:1                      | proposed |
+| [0015](./0015-postgresql-nativo-docker-drizzle.md)                  | PostgreSQL nativo via Docker e Drizzle migrations                | accepted |

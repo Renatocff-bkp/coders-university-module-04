@@ -2,13 +2,13 @@
 
 ## Metadado
 
-| Campo         | Valor      |
-| ------------- | ---------- |
+| Campo         | Valor         |
+| ------------- | ------------- |
 | Status        | `implemented` |
-| Prioridade    | `high`     |
-| Criado em     | 2026-10-29 |
-| Atualizado em | 2026-11-01 |
-| Responsável   | Renato     |
+| Prioridade    | `high`        |
+| Criado em     | 2026-10-29    |
+| Atualizado em | 2026-11-01    |
+| Responsável   | Renato        |
 
 ## Resumo
 

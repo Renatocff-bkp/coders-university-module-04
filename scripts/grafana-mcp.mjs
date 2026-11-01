@@ -44,8 +44,11 @@ function loadEnv(filePath) {
 const envPath = resolve(repoRoot, ".env");
 const fileEnv = loadEnv(envPath);
 
-const grafanaUrl = process.env.GRAFANA_URL || fileEnv.GRAFANA_URL || "http://localhost:3003";
-const token = process.env.GRAFANA_SERVICE_ACCOUNT_TOKEN || fileEnv.GRAFANA_SERVICE_ACCOUNT_TOKEN;
+const grafanaUrl =
+  process.env.GRAFANA_URL || fileEnv.GRAFANA_URL || "http://localhost:3003";
+const token =
+  process.env.GRAFANA_SERVICE_ACCOUNT_TOKEN ||
+  fileEnv.GRAFANA_SERVICE_ACCOUNT_TOKEN;
 
 if (!token) {
   process.stderr.write(
@@ -56,7 +59,10 @@ if (!token) {
 }
 
 // The MCP server runs in a container; reach the host's Grafana via host.docker.internal.
-const containerUrl = grafanaUrl.replace(/localhost|127\.0\.0\.1/, "host.docker.internal");
+const containerUrl = grafanaUrl.replace(
+  /localhost|127\.0\.0\.1/,
+  "host.docker.internal",
+);
 
 const child = spawn(
   "docker",

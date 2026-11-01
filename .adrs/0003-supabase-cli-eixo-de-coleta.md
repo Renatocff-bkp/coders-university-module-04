@@ -1,6 +1,6 @@
 # 0003. Supabase CLI, stack LGTM em Compose e Grafana Alloy
 
-- **Status:** accepted
+- **Status:** superseded by ADR-0015
 - **Data:** 2026-10-29
 - **Decisores:** Renato Figueredo
 - **Spec:** [000-foundation](../.specs/000-foundation.md) — Etapa 3
@@ -100,7 +100,7 @@ Sem um contrato HTTP estável para as features de auth da spec 001–006, qualqu
 
 # 0005. Drizzle ORM, migrações e estratégia de RLS
 
-- **Status:** accepted
+- **Status:** superseded by ADR-0015
 - **Data:** 2026-10-30
 - **Decisores:** Renato Figueredo
 - **Spec:** [000-foundation](../.specs/000-foundation.md) — Etapa 5

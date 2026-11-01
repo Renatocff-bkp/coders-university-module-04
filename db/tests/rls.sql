@@ -1,6 +1,6 @@
 begin;
 
-create extension if not exists pgtap with schema extensions;
+create extension if not exists pgtap;
 
 select plan(5);
 

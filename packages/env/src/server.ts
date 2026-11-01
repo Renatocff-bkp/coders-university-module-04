@@ -19,11 +19,6 @@ export const serverEnvSchema = z.object({
     .min(1, "PORT must be between 1 and 65535")
     .max(65535, "PORT must be between 1 and 65535")
     .default(3002),
-  SUPABASE_URL: z.url("SUPABASE_URL must be a valid URL"),
-  SUPABASE_ANON_KEY: z.string().min(1, "SUPABASE_ANON_KEY is required"),
-  SUPABASE_SERVICE_ROLE_KEY: z
-    .string()
-    .min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
   DATABASE_URL: postgresUrl,
   CORS_ORIGIN: z
     .url("CORS_ORIGIN must be a valid URL")

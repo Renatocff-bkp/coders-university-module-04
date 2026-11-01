@@ -9,9 +9,6 @@ export default defineConfig({
     env: {
       NODE_ENV: "test",
       PORT: "3002",
-      SUPABASE_URL: "http://127.0.0.1:54321",
-      SUPABASE_ANON_KEY: "test-anon-key",
-      SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
       DATABASE_URL:
         "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
       LOG_LEVEL: "info",

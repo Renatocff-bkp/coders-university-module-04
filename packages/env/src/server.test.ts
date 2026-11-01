@@ -5,9 +5,6 @@ import { loadEnv } from "./server";
 const validEnv = {
   NODE_ENV: "test",
   PORT: "3002",
-  SUPABASE_URL: "http://127.0.0.1:54321",
-  SUPABASE_ANON_KEY: "anon-key",
-  SUPABASE_SERVICE_ROLE_KEY: "service-role-key",
   DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
 };
 
@@ -37,24 +34,18 @@ describe("loadEnv", () => {
   });
 
   it("names every missing variable and never prints secret values", () => {
-    expect(() => loadEnv({})).toThrowError(
-      /NODE_ENV|SUPABASE_URL|SUPABASE_ANON_KEY|SUPABASE_SERVICE_ROLE_KEY|DATABASE_URL/,
-    );
+    expect(() => loadEnv({})).toThrowError(/NODE_ENV|DATABASE_URL/);
 
     try {
       loadEnv({
         ...validEnv,
-        SUPABASE_ANON_KEY: "",
-        SUPABASE_SERVICE_ROLE_KEY: "",
+        DATABASE_URL: "",
       });
       expect.unreachable("loadEnv should have thrown");
     } catch (error) {
       const message = (error as Error).message;
 
-      expect(message).toContain("SUPABASE_ANON_KEY");
-      expect(message).toContain("SUPABASE_SERVICE_ROLE_KEY");
-      expect(message).not.toContain("anon-key");
-      expect(message).not.toContain("service-role-key");
+      expect(message).toContain("DATABASE_URL");
       expect(message).not.toContain(validEnv.DATABASE_URL);
     }
   });
@@ -67,11 +58,5 @@ describe("loadEnv", () => {
     expect(() =>
       loadEnv({ ...validEnv, DATABASE_URL: "mysql://localhost/db" }),
     ).toThrowError(/DATABASE_URL/);
-  });
-
-  it("rejects an invalid Supabase URL", () => {
-    expect(() =>
-      loadEnv({ ...validEnv, SUPABASE_URL: "not-a-url" }),
-    ).toThrowError(/SUPABASE_URL/);
   });
 });

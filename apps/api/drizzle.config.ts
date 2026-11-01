@@ -7,10 +7,7 @@ const databaseUrl =
 export default defineConfig({
   dialect: "postgresql",
   schema: "./src/shared/database/schema.ts",
-  out: "../../supabase/migrations",
-  migrations: {
-    prefix: "supabase",
-  },
+  out: "../../migrations",
   dbCredentials: {
     url: databaseUrl,
   },

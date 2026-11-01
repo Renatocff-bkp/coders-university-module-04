@@ -1,6 +1,6 @@
 # 0005. Drizzle ORM, migrações e estratégia de RLS
 
-- **Status:** accepted
+- **Status:** superseded by ADR-0015
 - **Data:** 2026-10-30
 - **Decisores:** Renato Figueredo
 - **Spec:** [000-foundation](../.specs/000-foundation.md) — Etapa 5

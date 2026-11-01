@@ -59,6 +59,7 @@ npm run infra:down    # Derruba a infraestrutura local
 npm run infra:logs    # Acompanha os logs da stack de observabilidade
 npm run db:migrate    # Aplica migrations no banco
 npm run db:reset      # Reseta o banco local e reaplica migrations
+# Postgres 17 roda via Docker Compose (porta 54322); RLS validado com pgTAP via db:test
 ```
 
 ## Comandos de aplicação

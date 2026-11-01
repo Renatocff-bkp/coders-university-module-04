@@ -17,7 +17,9 @@ Monorepo gerenciado por [Turborepo](https://turborepo.dev) com workspaces npm.
 │   ├── eslint-config/      # Configuração ESLint compartilhada
 │   ├── typescript-config/  # Configurações TypeScript compartilhadas
 │   └── ui/                  # Design system (@repo/ui)
-├── supabase/              # Migrations e testes RLS
+├── migrations/            # Migrations SQL (Drizzle)
+├── db/                    # Testes RLS (pgTAP) e seed
+├── infra/postgres/        # Imagem e init scripts do Postgres
 ├── infra/                 # Configurações LGTM (Alloy, Loki, Tempo, Mimir, Grafana)
 ├── docker-compose.yml    # Stack LGTM local
 ├── scripts/               # Health check da infraestrutura
@@ -40,7 +42,7 @@ foram executadas até o momento:
 | `packages/ui`                | Existe                  | shadcn/ui sobre Tailwind 4, tokens de `DESIGN.md`, build ESM em dist/                                                                         |
 | `packages/eslint-config`     | Existe                  | Funcional                                                                                                                                     |
 | `packages/typescript-config` | Existe                  | Funcional                                                                                                                                     |
-| Supabase (auth/db/storage)   | **Existe**              | Postgres/Auth/Storage local, migrations Drizzle via Supabase CLI, RLS (Etapas 3 a 5)                                                          |
+| Postgres (db)                | **Existe**              | PostgreSQL 17 via Docker Compose, migrations Drizzle via drizzle-kit, RLS (Etapas 3 a 5, spec 008)                                            |
 | Testes (Vitest/Playwright)   | **Existe parcialmente** | Vitest cobre API e app (unit/integration); `test:e2e` segue sem runner até a Etapa 8                                                          |
 | Observabilidade (LGTM)       | **Existe**              | Alloy → Loki/Tempo/Mimir + Grafana dashboard `api-overview` (Etapa 6)                                                                         |
 
@@ -64,14 +66,14 @@ foram executadas até o momento:
 | NestJS         | 11.2      | API REST, módulos e DI                                                     |
 | Drizzle ORM    | 0.45      | ORM sobre Postgres                                                         |
 | Drizzle Kit    | 0.31      | Geração de migrations                                                      |
-| Supabase       | —         | Auth + banco de dados + storage                                            |
+| PostgreSQL     | 17        | Banco de dados (via Docker Compose), RLS habilitado                        |
 | Bcrypt         | 6         | Hash de senhas                                                             |
 | OpenTelemetry  | 1.x/0.300 | Traces e métricas via OTLP para Alloy                                      |
 | Auth (própria) | —         | Usuários, sessões, tokens, Bearer, `EmailService`, sessão única (ADR-0007) |
 
 ## Banco de dados
 
-PostgreSQL via Supabase, com RLS habilitado por padrão. Migrations versionadas e aplicadas via `db:migrate`.
+PostgreSQL 17 via Docker Compose, com RLS habilitado por padrão. Migrations versionadas e aplicadas via `db:migrate` (drizzle-kit).
 
 ## Versionamento da API
 
@@ -87,7 +89,7 @@ Todas as rotas de negócio — incluindo auth — são servidas sob o prefixo gl
 | Mimir          | Métricas (OTLP via Alloy / Prometheus)      |
 | Alloy          | Coletor único: OTLP + Loki push             |
 | Docker Compose | Stack LGTM local                            |
-| Supabase       | Postgres, Auth e Storage                    |
+| Postgres       | Banco de dados (PostgreSQL 17)              |
 
 ## Tasks do Turborepo
 
@@ -112,7 +114,7 @@ Decisões formais com contexto e trade-offs estão em [`.adrs/`](../.adrs/README
 
 - **Cliente SPA, não SSR** — O cliente é React + Vite (SPA). Next.js é usado apenas em `apps/docs`.
 - **Backend NestJS modular** — API em monólito modular com NestJS, não microsserviços.
-- **Supabase como backend-as-a-service** — Auth, Postgres e Storage gerenciados.
+- **PostgreSQL nativo via Docker** — Banco de dados local via Docker Compose; auth própria (ADR-0007); RLS habilitado (ADR-0015).
 - **Arquitetura em camadas** — application / domain / infrastructure / interface. Ver [DEVELOPMENT.md](./DEVELOPMENT.md).
 - **Vertical slices** — Código fatiado por domínio de negócio, não por camada técnica.
 - **Testes desde o dia zero** — TDD. Cobertura de lógica de negócio obrigatória.
