@@ -3,9 +3,21 @@ import { describe, expect, it } from "vitest";
 import {
   firstInvalidField,
   PASSWORD_MIN_LENGTH,
+  validateEmail,
   validateSignInForm,
   validateSignUpForm,
 } from "./validation";
+
+describe("validateEmail", () => {
+  it("accepts a well-formed address, ignoring surrounding spaces", () => {
+    expect(validateEmail("  ada@example.com ")).toBeUndefined();
+  });
+
+  it("rejects an empty or malformed address", () => {
+    expect(validateEmail("")).toBe("Enter a valid email address.");
+    expect(validateEmail("ada@example")).toBe("Enter a valid email address.");
+  });
+});
 
 const VALID_VALUES = {
   firstName: "Ada",

@@ -23,6 +23,12 @@ export const SIGN_UP_FIELD_ORDER: SignUpField[] = [
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export function validateEmail(email: string): string | undefined {
+  return EMAIL_PATTERN.test(email.trim())
+    ? undefined
+    : "Enter a valid email address.";
+}
+
 export function validateSignUpForm(
   values: SignUpFormValues,
 ): SignUpFieldErrors {
@@ -40,8 +46,10 @@ export function validateSignUpForm(
     errors.lastName = `Last name must be at most ${NAME_MAX_LENGTH} characters.`;
   }
 
-  if (!EMAIL_PATTERN.test(values.email.trim())) {
-    errors.email = "Enter a valid email address.";
+  const emailError = validateEmail(values.email);
+
+  if (emailError) {
+    errors.email = emailError;
   }
 
   if (values.password.length < PASSWORD_MIN_LENGTH) {
