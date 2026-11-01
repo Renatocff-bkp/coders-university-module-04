@@ -98,9 +98,9 @@ verdade, não o histórico da negociação.
 
 ## Índice
 
-| ADR                                          | Título                           | Status   |
-| -------------------------------------------- | -------------------------------- | -------- |
-| [0001](./0001-estado-alvo-da-stack.md)       | Estado-alvo da stack do monorepo | accepted |
-| [0002](./0002-tokens-derivados-da-paleta.md) | Tokens derivados da paleta       | accepted |
-| [0007](./0007-auth-propria-e-bearer.md)      | Autenticação própria com Bearer  | accepted |
+| ADR                                                           | Título                                                   | Status   |
+| ------------------------------------------------------------- | -------------------------------------------------------- | -------- |
+| [0001](./0001-estado-alvo-da-stack.md)                        | Estado-alvo da stack do monorepo                         | accepted |
+| [0002](./0002-tokens-derivados-da-paleta.md)                  | Tokens derivados da paleta                               | accepted |
+| [0007](./0007-auth-propria-e-bearer.md)                       | Autenticação própria com Bearer                          | accepted |
 | [0009](./0009-unidade-de-trabalho-na-confirmacao-de-conta.md) | Unidade de trabalho transacional na confirmação de conta | accepted |
