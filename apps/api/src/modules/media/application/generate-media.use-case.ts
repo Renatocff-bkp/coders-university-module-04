@@ -1,11 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { getServerEnv } from "../../../shared/config/env";
 
-import { MediaRepository } from "../infrastructure/media.repository";
+import { MEDIA_REPOSITORY } from "../media.tokens";
+import type { MediaRepository } from "../domain/media-repository";
 
 @Injectable()
 export class GenerateMediaUseCase {
-  constructor(private readonly repo: MediaRepository) {}
+  constructor(
+    @Inject(MEDIA_REPOSITORY) private readonly repo: MediaRepository,
+  ) {}
 
   async generateImage(input: { userId: string; prompt: string }) {
     const env = getServerEnv();
