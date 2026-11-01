@@ -98,11 +98,12 @@ verdade, não o histórico da negociação.
 
 ## Índice
 
-| ADR                                                           | Título                                                   | Status   |
-| ------------------------------------------------------------- | -------------------------------------------------------- | -------- |
-| [0001](./0001-estado-alvo-da-stack.md)                        | Estado-alvo da stack do monorepo                         | accepted |
-| [0002](./0002-tokens-derivados-da-paleta.md)                  | Tokens derivados da paleta                               | accepted |
-| [0007](./0007-auth-propria-e-bearer.md)                       | Autenticação própria com Bearer                          | accepted |
-| [0009](./0009-unidade-de-trabalho-na-confirmacao-de-conta.md) | Unidade de trabalho transacional na confirmação de conta | accepted |
-| [0010](./0010-resposta-distinta-para-conta-nao-confirmada.md) | Resposta distinta para conta não confirmada no login     | accepted |
-| [0011](./0011-esqueci-a-senha-sem-aguardar-envio.md)          | Esqueci a senha responde antes da busca e do envio       | accepted |
+| ADR                                                                 | Título                                                           | Status   |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------- | -------- |
+| [0001](./0001-estado-alvo-da-stack.md)                              | Estado-alvo da stack do monorepo                                 | accepted |
+| [0002](./0002-tokens-derivados-da-paleta.md)                        | Tokens derivados da paleta                                       | accepted |
+| [0007](./0007-auth-propria-e-bearer.md)                             | Autenticação própria com Bearer                                  | accepted |
+| [0009](./0009-unidade-de-trabalho-na-confirmacao-de-conta.md)       | Unidade de trabalho transacional na confirmação de conta         | accepted |
+| [0010](./0010-resposta-distinta-para-conta-nao-confirmada.md)       | Resposta distinta para conta não confirmada no login             | accepted |
+| [0011](./0011-esqueci-a-senha-sem-aguardar-envio.md)                | Esqueci a senha responde antes da busca e do envio               | accepted |
+| [0012](./0012-troca-de-senha-revoga-sessoes-e-avisa-apos-commit.md) | Troca de senha revoga sessões na transação e avisa após o commit | accepted |
