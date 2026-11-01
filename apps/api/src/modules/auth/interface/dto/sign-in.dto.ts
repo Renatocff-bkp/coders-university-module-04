@@ -1,5 +1,7 @@
 import { Transform } from "class-transformer";
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsString, Validate } from "class-validator";
+
+import { IsValidEmailValidator } from "./is-valid-email.validator";
 
 function trimString({ value }: { value: unknown }): unknown {
   return typeof value === "string" ? value.trim() : value;
@@ -7,7 +9,7 @@ function trimString({ value }: { value: unknown }): unknown {
 
 export class SignInDto {
   @Transform(trimString)
-  @IsEmail({}, { message: "Enter a valid email address" })
+  @Validate(IsValidEmailValidator, { message: "Enter a valid email address" })
   email!: string;
 
   @IsString()
