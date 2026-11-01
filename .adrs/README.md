@@ -105,3 +105,4 @@ verdade, não o histórico da negociação.
 | [0007](./0007-auth-propria-e-bearer.md)                       | Autenticação própria com Bearer                          | accepted |
 | [0009](./0009-unidade-de-trabalho-na-confirmacao-de-conta.md) | Unidade de trabalho transacional na confirmação de conta | accepted |
 | [0010](./0010-resposta-distinta-para-conta-nao-confirmada.md) | Resposta distinta para conta não confirmada no login     | accepted |
+| [0011](./0011-esqueci-a-senha-sem-aguardar-envio.md)          | Esqueci a senha responde antes da busca e do envio       | accepted |
