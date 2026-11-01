@@ -38,11 +38,15 @@ export class ResendEmailService implements EmailService {
     userId: string;
     email: string;
     sessionId: string;
+    createdAt: Date;
+    userAgent: string | null;
   }): Promise<void> {
     await this.deliver({
       to: input.email,
       template: "new_session",
       sessionId: input.sessionId,
+      createdAt: input.createdAt,
+      userAgent: input.userAgent,
     });
   }
 

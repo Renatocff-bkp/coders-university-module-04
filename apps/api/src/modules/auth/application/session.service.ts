@@ -77,13 +77,14 @@ export class SessionService {
       requestId: input.requestId,
     });
 
-    await this.sendNewSessionEmail(session.id, input);
+    await this.sendNewSessionEmail(session.id, now, input);
 
     return { token, sessionId: session.id, expiresAt };
   }
 
   private async sendNewSessionEmail(
     sessionId: string,
+    createdAt: Date,
     input: CreateSessionInput,
   ): Promise<void> {
     const user = await this.users.findById(input.userId);
@@ -97,6 +98,8 @@ export class SessionService {
         userId: user.id,
         email: user.email,
         sessionId,
+        createdAt,
+        userAgent: input.userAgent ?? null,
       });
     } catch {
       // The session is already valid; a mailer outage must not fail the login

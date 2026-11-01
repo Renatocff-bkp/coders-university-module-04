@@ -13,6 +13,8 @@ export interface AuthEmail {
   token?: string | null;
   expiresAt?: Date | null;
   sessionId?: string | null;
+  createdAt?: Date | null;
+  userAgent?: string | null;
 }
 
 export interface EmailService {
@@ -27,6 +29,8 @@ export interface EmailService {
     userId: string;
     email: string;
     sessionId: string;
+    createdAt: Date;
+    userAgent: string | null;
   }): Promise<void>;
 
   sendPasswordResetEmail(input: {

@@ -125,6 +125,7 @@ describe("SessionService", () => {
 
     const created = await service.create({
       userId: user.id,
+      userAgent: "vitest",
       requestId: "request-1",
     });
 
@@ -133,6 +134,8 @@ describe("SessionService", () => {
         to: "ada@example.com",
         template: "new_session",
         sessionId: created.sessionId,
+        createdAt: NOW,
+        userAgent: "vitest",
       },
     ]);
   });

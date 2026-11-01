@@ -151,6 +151,8 @@ describe("POST /api/v1/auth/confirm-account", () => {
         to: "ada@example.com",
         template: "new_session",
         sessionId: sessions.sessions[0]?.id,
+        createdAt: NOW,
+        userAgent: "vitest",
       },
     ]);
   });
