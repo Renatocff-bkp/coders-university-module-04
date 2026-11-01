@@ -11,6 +11,7 @@ import { SignInController } from "./interface/sign-in.controller";
 import { SignOutController } from "./interface/sign-out.controller";
 import { SignUpController } from "./interface/sign-up.controller";
 import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
+import { GetSessionUseCase } from "./application/get-session.use-case";
 import { ForgotPasswordUseCase } from "./application/forgot-password.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
 import { ResetPasswordUseCase } from "./application/reset-password.use-case";
@@ -108,6 +109,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     OneTimeTokenService,
     SignUpUseCase,
     ConfirmAccountUseCase,
+    GetSessionUseCase,
     SignInUseCase,
     SignOutUseCase,
     ForgotPasswordUseCase,
