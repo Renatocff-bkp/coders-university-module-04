@@ -8,6 +8,8 @@
 4. **Implemente com TDD** — Teste antes da implementação.
 5. **Registre as decisões** — Toda decisão arquitetural vira ADR (ver abaixo).
 6. **Verifique** — Execute todos os comandos de [QA.md](./QA.md).
+7. **Audite dependências** — Antes de abrir o PR, o subagent `security-deps-auditor` roda a skill `check-security-dependencys` (ver `/open-pr`). Correção de vulnerabilidade vai em commit `fix(deps)` separado; o commit da feature e a descrição do PR registram lib, advisory e versões.
+8. **Abra o PR com `/open-pr`** — Único caminho para abrir PR de feature. Bloqueia em `critical` ou `high` sem correção validada.
 
 ## ADRs (Architecture Decision Records)
 
@@ -40,7 +42,8 @@ Não omita nenhum desses itens. Se algo não se aplica, escreva "n/a" com o moti
 - Formato: `type(scope): descrição` ([Conventional Commits](https://conventionalcommits.org))
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `build`, `ci`, `revert`
 - A mensagem é validada por `commitlint` (`@commitlint/config-conventional`) no hook `commit-msg`; commit fora do padrão é bloqueado. Configuração em [`commitlint.config.mjs`](../commitlint.config.mjs)
-- Ao final de cada spec, rode o comando `/commit-and-push` (analisa o diff, gera a mensagem, commita e publica)
+- Ao final de cada spec, rode o comando `/commit-and-push` (analisa o diff, gera a mensagem, commita e publica). Para feature que vai para PR, use `/open-pr`, que inclui a auditoria de dependências
+- Correção de dependência de segurança: formato `fix(deps): corrige vulnerabilidades em <libs>`, com corpo listando por achado a lib, a versão anterior → nova, a severidade, a advisory (GHSA/CVE + URL), o workspace e o tipo de dependência
 - Commits produzidos por agente carregam `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>`. O domínio `.invalid` (RFC 2606) garante que o trailer não vincule o commit a nenhuma conta real do GitHub
 - Um commit por mudança lógica
 - Não misture feature com refactor no mesmo commit

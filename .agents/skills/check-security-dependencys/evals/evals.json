@@ -1,0 +1,41 @@
+{
+  "skill_name": "check-security-dependencys",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Me faz um check de segurança nas dependências do projeto. Roda o npm audit, lista o que achou com a severidade e o advisory, e me diz o que você faria a partir daí.",
+      "expected_output": "Relatório de vulnerabilidades com severidade/advisory por lib, sem aplicar nada ainda.",
+      "files": [],
+      "expectations": [
+        "Roda npm audit na raiz do monorepo e lê o JSON com --json",
+        "Consolida os achados por severidade",
+        "Reporta advisory IDs (ex.: GHSA-) e escopo (isDirect/isDev/effects)",
+        "Não aplica correção antes de triar; para por escrito o plano de remediação"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Achei que alguma dependência do projeto tem vulnerabilidade. Checa todas as dependências do monorepo, e se houver com alerta, atualiza para a versão que corrige o problema.",
+      "expected_output": "Correção aplicada (npm audit fix ou bump de versão exata) e validação dos gates.",
+      "files": [],
+      "expectations": [
+        "Varre o monorepo inteiro (root + apps/* + packages/*) via npm audit",
+        "Aplica a versão corrigida (fixAvailable) com versão exata no package.json, sem introduzir ^/~",
+        "Não usa npm audit fix --force cego em correção breaking sem investigar advisory",
+        "Roda os QA gates (lint, check-types, test, build) após a correção"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Temos uma lib aqui que deu um advisory de segurança. Se a versão corrigida existir, atualiza e valida. Se não existir, não quero que você deixe de usar a lib, me avisa o que fazer.",
+      "expected_output": "Escalonamento claro quando não há fix upstream; nenhum workaround destrutivo.",
+      "files": [],
+      "expectations": [
+        "Verifica disponibilidade de fix/upgrades via npm audit e registry",
+        "Quando não há fix, reporta no relatório e escala ao usuário",
+        "Não desabilita advisories (overrides/omit) sem justificativa",
+        "Não deixa working tree sujo nem descarta trabalho alheio"
+      ]
+    }
+  ]
+}

@@ -111,3 +111,4 @@ verdade, não o histórico da negociação.
 | [0014](./0014-request-handler-por-endpoint-e-use-case-1-para-1.md)  | Request handler por endpoint e use case 1:1                      | proposed |
 | [0015](./0015-postgresql-nativo-docker-drizzle.md)                  | PostgreSQL nativo via Docker e Drizzle migrations                | accepted |
 | [0016](./0016-stack-de-ia-langchain-weaviate.md)                    | Stack de IA: LangChain.js + Weaviate + modelos OpenAI/Gemini     | accepted |
+| [0017](./0017-gate-de-seguranca-de-dependencias-antes-do-pr.md)     | Gate de segurança de dependências antes do PR                    | accepted |
