@@ -185,7 +185,7 @@ Não há usuário nesta sessão. Não use ferramentas interativas e não espere 
 2. Plano: execute uma versão autônoma do feature-concept — explore o codebase, responda às próprias perguntas nos docs, consolide o plano em `.docs/plans/{spec}-plan.md` com etapas, riscos e critérios. Atualize Phase: plan.
 3. Implementação com TDD, seguindo camadas e vertical slices de DEVELOPMENT.md e o design system. Uma mudança lógica por vez. Atualize Phase: implement.
 4. Verificação local: `npm run lint`, `npm run check-types`, `npm run test`, `npm run build`, `npm run format:check`. Para reduzir tempo, valide primeiro os workspaces afetados com `npx turbo run <task> --filter=<workspace>` e depois o comando raiz. Atualize Phase: qa.
-5. E2E e qualquer teste que dependa de infraestrutura compartilhada (Supabase local, portas fixas, Docker) NÃO devem ser executados aqui: escreva/atualize os testes e marque `deferred` no relatório. A execução serializada é feita pelo orquestrador na integração.
+5. E2E e qualquer teste que dependa de infraestrutura compartilhada (Postgres local, portas fixas, Docker) NÃO devem ser executados aqui: escreva/atualize os testes e marque `deferred` no relatório. A execução serializada é feita pelo orquestrador na integração.
 6. Não rode `npm run dev`, `infra:up`, `db:reset` nem `db:migrate` — a infraestrutura é compartilhada entre worktrees.
 7. Commit(s) locais em Conventional Commits, um por mudança lógica, com a última linha exatamente `Co-authored-by: OpenCode Agent <opencode-agent@opencode.invalid>`. Nunca use `--no-verify`. Não faça push, merge, rebase ou checkout de outra branch.
 8. Se houver decisão arquitetural, crie o ADR no número reservado seguindo `.adrs/README.md` e cite no corpo do commit.
@@ -291,7 +291,7 @@ npm run build
 npm run test:e2e
 ```
 
-Se `test:e2e` ou testes de infraestrutura não puderem rodar (Docker/Supabase indisponível), registre `blocked (infra)` com o erro real. Nunca declare `pass` sem executar.
+Se `test:e2e` ou testes de infraestrutura não puderem rodar (Docker/Postgres indisponível), registre `blocked (infra)` com o erro real. Nunca declare `pass` sem executar.
 
 2. Atualize o `Status` de cada spec integrada para `implemented` e `Atualizado em` para a data atual. Atualize `.docs/plans/*-plan.md` se a execução divergiu do plano.
 3. Rode `/commit-and-push` na branch de integração para publicar status, planos e correções de conflito. Com `--no-push`, apenas commit e informe.

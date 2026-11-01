@@ -294,5 +294,5 @@ Apresente o relatório de entrega de `.docs/RULES.md`:
    ADR do request handler pattern.
 4. Usuário aprova. Executor implementa WU a WU, TDD, commits locais.
 5. Gates: `format:check`, `lint`, `check-types`, `test`, `build` verdes; E2E
-   `deferred (infra)` se Supabase/Docker não estiverem de pé.
+   `deferred (infra)` se Postgres/Docker não estiverem de pé.
 6. Push da branch e PR com a tabela antes/depois, QA real e riscos.

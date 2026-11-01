@@ -271,7 +271,7 @@ reporte a verdade. Não conserte código; se algo falhar, devolva o erro exato.
 4. Não use cache enganoso em gate vermelho: repita o comando que falhou com
    `node node_modules/turbo/bin/turbo run <task> --force` antes de concluir que
    é falha real.
-5. Se E2E/testes de infraestrutura não puderem rodar (Docker/Supabase/porta),
+5. Se E2E/testes de infraestrutura não puderem rodar (Docker/Postgres/porta),
    registre `blocked (infra)` com o erro real. Nunca declare `pass` sem executar.
 6. Verifique higiene do diff:
    - `git diff --name-only {base}...HEAD`
