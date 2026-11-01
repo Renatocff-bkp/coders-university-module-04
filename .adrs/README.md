@@ -104,3 +104,4 @@ verdade, não o histórico da negociação.
 | [0002](./0002-tokens-derivados-da-paleta.md)                  | Tokens derivados da paleta                               | accepted |
 | [0007](./0007-auth-propria-e-bearer.md)                       | Autenticação própria com Bearer                          | accepted |
 | [0009](./0009-unidade-de-trabalho-na-confirmacao-de-conta.md) | Unidade de trabalho transacional na confirmação de conta | accepted |
+| [0010](./0010-resposta-distinta-para-conta-nao-confirmada.md) | Resposta distinta para conta não confirmada no login     | accepted |
