@@ -6,12 +6,14 @@ import { getServerEnv } from "../../shared/config/env";
 import { AuthSessionController } from "./interface/auth-session.controller";
 import { ConfirmAccountController } from "./interface/confirm-account.controller";
 import { ForgotPasswordController } from "./interface/forgot-password.controller";
+import { ResetPasswordController } from "./interface/reset-password.controller";
 import { SignInController } from "./interface/sign-in.controller";
 import { SignOutController } from "./interface/sign-out.controller";
 import { SignUpController } from "./interface/sign-up.controller";
 import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
 import { ForgotPasswordUseCase } from "./application/forgot-password.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
+import { ResetPasswordUseCase } from "./application/reset-password.use-case";
 import { SessionService } from "./application/session.service";
 import { SignInUseCase } from "./application/sign-in.use-case";
 import { SignOutUseCase } from "./application/sign-out.use-case";
@@ -47,6 +49,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     SignInController,
     SignOutController,
     ForgotPasswordController,
+    ResetPasswordController,
   ],
   providers: [
     DrizzleTransactionManager,
@@ -108,6 +111,7 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     SignInUseCase,
     SignOutUseCase,
     ForgotPasswordUseCase,
+    ResetPasswordUseCase,
   ],
   exports: [
     AUTH_USER_REPOSITORY,
