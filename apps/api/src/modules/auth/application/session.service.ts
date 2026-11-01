@@ -6,11 +6,17 @@ import {
 } from "../domain/auth-session";
 import type { Clock } from "../domain/clock";
 import { InvalidTokenError } from "../domain/errors";
-import type { AuthSessionRepository } from "../domain/repositories";
+import type {
+  AuthSessionRepository,
+  AuthUserRepository,
+} from "../domain/repositories";
+import type { EmailService } from "../domain/email-service";
 import type { TokenGenerator } from "../domain/token-generator";
 import {
   AUTH_SESSION_REPOSITORY,
+  AUTH_USER_REPOSITORY,
   CLOCK,
+  EMAIL_SERVICE,
   SESSION_TTL_MS,
   TOKEN_GENERATOR,
 } from "../auth.tokens";
@@ -19,6 +25,7 @@ export interface CreateSessionInput {
   userId: string;
   userAgent?: string | null;
   ipAddress?: string | null;
+  requestId?: string;
 }
 
 export interface CreatedSession {
@@ -37,6 +44,8 @@ export class SessionService {
     private readonly sessions: AuthSessionRepository,
     @Inject(TOKEN_GENERATOR) private readonly tokens: TokenGenerator,
     @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(AUTH_USER_REPOSITORY) private readonly users: AuthUserRepository,
+    @Inject(EMAIL_SERVICE) private readonly email: EmailService,
     @Optional()
     @Inject(SESSION_TTL_MS)
     private readonly sessionTtlMs: number = DEFAULT_SESSION_TTL_MS,
@@ -65,9 +74,43 @@ export class SessionService {
       event: "auth.session.created",
       userId: input.userId,
       sessionId: session.id,
+      requestId: input.requestId,
     });
 
+    await this.sendNewSessionEmail(session.id, now, input);
+
     return { token, sessionId: session.id, expiresAt };
+  }
+
+  private async sendNewSessionEmail(
+    sessionId: string,
+    createdAt: Date,
+    input: CreateSessionInput,
+  ): Promise<void> {
+    const user = await this.users.findById(input.userId);
+
+    if (!user) {
+      return;
+    }
+
+    try {
+      await this.email.sendNewSessionEmail({
+        userId: user.id,
+        email: user.email,
+        sessionId,
+        createdAt,
+        userAgent: input.userAgent ?? null,
+      });
+    } catch {
+      // The session is already valid; a mailer outage must not fail the login
+      // or the account confirmation. The token never reaches the logs.
+      this.logger.error({
+        event: "auth.session.new_session_email_failed",
+        userId: user.id,
+        sessionId,
+        requestId: input.requestId,
+      });
+    }
   }
 
   async validate(rawToken: string): Promise<string | null> {

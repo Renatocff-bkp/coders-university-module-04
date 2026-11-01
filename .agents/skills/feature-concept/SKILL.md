@@ -99,4 +99,4 @@ Ao final do interrogatório, apresente:
 - **Use o contexto** — Referencie arquivos, componentes e padrões existentes
 - **Adapte-se** — Se o usuário disser "não sei", ofereça opções para escolher
 - **Mantenha o ritmo** — Não faça mais de uma pergunta por mensagem
-- **Documente** — Salve o consenso final em `./plans/{feature-name}-plan.md` se apropriado
+- **Documente** — Salve o consenso final em `.docs/plans/{feature-name}-plan.md` se apropriado

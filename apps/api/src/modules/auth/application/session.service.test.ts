@@ -1,10 +1,13 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { Logger } from "@nestjs/common";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { SESSION_TTL_MS } from "../domain/auth-session";
 import { InvalidTokenError } from "../domain/errors";
+import { FakeEmailService } from "../testing/fake-email.service";
 import {
   FixedClock,
   InMemoryAuthSessionRepository,
+  InMemoryAuthUserRepository,
   SequentialTokenGenerator,
 } from "../testing/in-memory-repositories";
 import { SessionService } from "./session.service";
@@ -14,14 +17,18 @@ const NOW = new Date("2026-01-01T00:00:00.000Z");
 describe("SessionService", () => {
   let clock: FixedClock;
   let sessions: InMemoryAuthSessionRepository;
+  let users: InMemoryAuthUserRepository;
+  let email: FakeEmailService;
   let tokens: SequentialTokenGenerator;
   let service: SessionService;
 
   beforeEach(() => {
     clock = new FixedClock(NOW);
     sessions = new InMemoryAuthSessionRepository();
+    users = new InMemoryAuthUserRepository();
+    email = new FakeEmailService();
     tokens = new SequentialTokenGenerator();
-    service = new SessionService(sessions, tokens, clock);
+    service = new SessionService(sessions, tokens, clock, users, email);
   });
 
   it("creates a session persisting only the token hash", async () => {
@@ -106,5 +113,61 @@ describe("SessionService", () => {
 
     expect(await service.revokeAll("user-1")).toBe(1);
     expect(await service.revokeAll("user-1")).toBe(0);
+  });
+
+  it("sends the new-session e-mail with the session id", async () => {
+    const user = await users.create({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      passwordHash: "hashed-password",
+    });
+
+    const created = await service.create({
+      userId: user.id,
+      userAgent: "vitest",
+      requestId: "request-1",
+    });
+
+    expect(email.sent).toEqual([
+      {
+        to: "ada@example.com",
+        template: "new_session",
+        sessionId: created.sessionId,
+        createdAt: NOW,
+        userAgent: "vitest",
+      },
+    ]);
+  });
+
+  it("keeps the session when the new-session e-mail fails", async () => {
+    const errorSpy = vi
+      .spyOn(Logger.prototype, "error")
+      .mockImplementation(() => undefined);
+    const user = await users.create({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      passwordHash: "hashed-password",
+    });
+    vi.spyOn(email, "sendNewSessionEmail").mockRejectedValue(
+      new Error("mailer down"),
+    );
+
+    const created = await service.create({
+      userId: user.id,
+      requestId: "request-2",
+    });
+
+    expect(sessions.sessions).toHaveLength(1);
+    expect(await service.validate(created.token)).toBe(user.id);
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "auth.session.new_session_email_failed",
+        userId: user.id,
+        requestId: "request-2",
+      }),
+    );
+    expect(JSON.stringify(errorSpy.mock.calls)).not.toContain(created.token);
   });
 });

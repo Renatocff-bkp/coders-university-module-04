@@ -39,7 +39,7 @@ describe("MailtrapEmailService", () => {
     expect(sent[0]?.to).toBe("user@example.com");
     expect(sent[0]?.subject).toBe("Confirm your account");
     expect(sent[0]?.html).toContain(
-      "http://localhost:5173/auth/confirm?token=token-abc",
+      "http://localhost:5173/auth/confirm-account?token=token-abc",
     );
     expect(sent[0]?.html).toContain(expiresAt.toISOString());
   });
@@ -61,16 +61,35 @@ describe("MailtrapEmailService", () => {
     );
   });
 
-  it("renders and forwards the new session email", async () => {
+  it("renders and forwards the new session email with time and user agent", async () => {
+    const createdAt = new Date("2026-10-31T14:30:00.000Z");
+
     await service.sendNewSessionEmail({
       userId: "user-1",
       email: "user@example.com",
       sessionId: "session-42",
+      createdAt,
+      userAgent: "Mozilla/5.0 <script>",
     });
 
     expect(sent).toHaveLength(1);
     expect(sent[0]?.subject).toBe("New session started");
-    expect(sent[0]?.html).toContain("session-42");
+    expect(sent[0]?.html).toContain(createdAt.toISOString());
+    expect(sent[0]?.html).toContain("Mozilla/5.0 &lt;script&gt;");
+    expect(sent[0]?.html).not.toContain("<script>");
+  });
+
+  it("truncates a long user agent in the new session email", async () => {
+    await service.sendNewSessionEmail({
+      userId: "user-1",
+      email: "user@example.com",
+      sessionId: "session-43",
+      createdAt: new Date("2026-10-31T14:30:00.000Z"),
+      userAgent: "a".repeat(300),
+    });
+
+    expect(sent[0]?.html).toContain(`${"a".repeat(120)}...`);
+    expect(sent[0]?.html).not.toContain("a".repeat(121));
   });
 
   it("renders and forwards the password changed email", async () => {
@@ -116,6 +135,8 @@ describe("FakeEmailService", () => {
       userId: "user-1",
       email: "user@example.com",
       sessionId: "session-42",
+      createdAt: new Date("2026-10-31T14:30:00.000Z"),
+      userAgent: "vitest",
     });
     await fake.sendPasswordResetEmail({
       userId: "user-1",

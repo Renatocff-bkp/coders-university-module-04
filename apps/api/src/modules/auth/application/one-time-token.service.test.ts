@@ -94,4 +94,43 @@ describe("OneTimeTokenService", () => {
       InvalidTokenError,
     );
   });
+
+  it("invalidates previous unused tokens of the same type", async () => {
+    const first = await service.issue(
+      "user-1",
+      "email_confirmation",
+      EMAIL_CONFIRMATION_TTL_MS,
+    );
+    const second = await service.issue(
+      "user-1",
+      "email_confirmation",
+      EMAIL_CONFIRMATION_TTL_MS,
+    );
+
+    expect(repository.tokens[0]?.usedAt).toEqual(NOW);
+    await expect(
+      service.consume(first.token, "email_confirmation"),
+    ).rejects.toBeInstanceOf(InvalidTokenError);
+    await expect(
+      service.consume(second.token, "email_confirmation"),
+    ).resolves.toMatchObject({ id: second.tokenId });
+  });
+
+  it("keeps tokens of other types usable when issuing a new one", async () => {
+    const reset = await service.issue(
+      "user-1",
+      "password_reset",
+      EMAIL_CONFIRMATION_TTL_MS,
+    );
+
+    await service.issue(
+      "user-1",
+      "email_confirmation",
+      EMAIL_CONFIRMATION_TTL_MS,
+    );
+
+    await expect(
+      service.consume(reset.token, "password_reset"),
+    ).resolves.toMatchObject({ id: reset.tokenId });
+  });
 });

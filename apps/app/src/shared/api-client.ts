@@ -1,4 +1,8 @@
+import { clearAuthToken } from "../modules/auth/auth-storage";
+
 export const REQUEST_ID_HEADER = "x-request-id";
+
+const SESSION_ENDED_PATH = "/auth/sign-in?session=ended";
 
 const DEFAULT_BASE_URL = "http://localhost:3002";
 
@@ -7,6 +11,7 @@ export const API_BASE_URL: string =
 
 export interface FieldError {
   field: string;
+  messages?: string[];
 }
 
 export interface ApiErrorBody {
@@ -17,11 +22,13 @@ export interface ApiErrorBody {
 }
 
 export class ApiError extends Error {
+  readonly status: number;
   readonly code: string;
   readonly fields?: FieldError[];
   readonly requestId?: string;
 
   constructor(init: {
+    status: number;
     code: string;
     message: string;
     fields?: FieldError[];
@@ -29,6 +36,7 @@ export class ApiError extends Error {
   }) {
     super(init.message);
     this.name = "ApiError";
+    this.status = init.status;
     this.code = init.code;
     this.fields = init.fields;
     this.requestId = init.requestId;
@@ -96,7 +104,13 @@ export function resolveRequestId(value: string | undefined): string {
   return generateRequestId();
 }
 
-async function request<T>(
+function hasAuthorizationHeader(headers?: Record<string, string>): boolean {
+  return Object.keys(headers ?? {}).some(
+    (name) => name.toLowerCase() === "authorization",
+  );
+}
+
+export async function apiRequest<T>(
   path: string,
   options: RequestOptions = {},
 ): Promise<ApiResponse<T>> {
@@ -122,7 +136,13 @@ async function request<T>(
     { error?: ApiErrorBody } | undefined;
 
   if (!response.ok) {
+    if (response.status === 401 && hasAuthorizationHeader(options.headers)) {
+      clearAuthToken();
+      window.location.assign(SESSION_ENDED_PATH);
+    }
+
     throw new ApiError({
+      status: response.status,
       code: payload?.error?.code ?? "UNKNOWN_ERROR",
       message:
         payload?.error?.message ??
@@ -136,13 +156,13 @@ async function request<T>(
 }
 
 export async function getHealth(signal?: AbortSignal): Promise<HealthStatus> {
-  const { data } = await request<HealthStatus>("/health", { signal });
+  const { data } = await apiRequest<HealthStatus>("/health", { signal });
 
   return data;
 }
 
 export async function getPing(signal?: AbortSignal): Promise<PingResult> {
-  const { data, requestId } = await request<PingResult>("/api/v1/ping", {
+  const { data, requestId } = await apiRequest<PingResult>("/api/v1/ping", {
     signal,
   });
 
@@ -150,9 +170,12 @@ export async function getPing(signal?: AbortSignal): Promise<PingResult> {
 }
 
 export async function getSession(token?: string): Promise<AuthSessionResponse> {
-  const { data } = await request<AuthSessionResponse>("/api/v1/auth/session", {
-    headers: token ? { authorization: `Bearer ${token}` } : undefined,
-  });
+  const { data } = await apiRequest<AuthSessionResponse>(
+    "/api/v1/auth/session",
+    {
+      headers: token ? { authorization: `Bearer ${token}` } : undefined,
+    },
+  );
 
   return data;
 }

@@ -4,8 +4,20 @@ import { createTransport } from "nodemailer";
 import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
 import { AuthSessionController } from "./interface/auth-session.controller";
+import { ConfirmAccountController } from "./interface/confirm-account.controller";
+import { ForgotPasswordController } from "./interface/forgot-password.controller";
+import { ResetPasswordController } from "./interface/reset-password.controller";
+import { SignInController } from "./interface/sign-in.controller";
+import { SignOutController } from "./interface/sign-out.controller";
+import { SignUpController } from "./interface/sign-up.controller";
+import { ConfirmAccountUseCase } from "./application/confirm-account.use-case";
+import { ForgotPasswordUseCase } from "./application/forgot-password.use-case";
 import { OneTimeTokenService } from "./application/one-time-token.service";
+import { ResetPasswordUseCase } from "./application/reset-password.use-case";
 import { SessionService } from "./application/session.service";
+import { SignInUseCase } from "./application/sign-in.use-case";
+import { SignOutUseCase } from "./application/sign-out.use-case";
+import { SignUpUseCase } from "./application/sign-up.use-case";
 import {
   AUTH_SESSION_REPOSITORY,
   AUTH_TOKEN_REPOSITORY,
@@ -15,6 +27,7 @@ import {
   PASSWORD_HASHER,
   SESSION_TTL_MS,
   TOKEN_GENERATOR,
+  TRANSACTION_MANAGER,
 } from "./auth.tokens";
 import { systemClock } from "./domain/clock";
 import type { EmailService } from "./domain/email-service";
@@ -23,16 +36,27 @@ import { CryptoTokenGenerator } from "./infrastructure/crypto-token-generator";
 import { DrizzleAuthSessionRepository } from "./infrastructure/drizzle-auth-session.repository";
 import { DrizzleAuthTokenRepository } from "./infrastructure/drizzle-auth-token.repository";
 import { DrizzleAuthUserRepository } from "./infrastructure/drizzle-auth-user.repository";
+import { DrizzleTransactionManager } from "./infrastructure/drizzle-transaction-manager";
 import { MailtrapEmailService } from "./infrastructure/mailtrap-email.service";
 import { ResendEmailService } from "./infrastructure/resend-email.service";
 
 @Module({
   imports: [DatabaseModule],
-  controllers: [AuthSessionController],
+  controllers: [
+    AuthSessionController,
+    SignUpController,
+    ConfirmAccountController,
+    SignInController,
+    SignOutController,
+    ForgotPasswordController,
+    ResetPasswordController,
+  ],
   providers: [
+    DrizzleTransactionManager,
     DrizzleAuthUserRepository,
     DrizzleAuthSessionRepository,
     DrizzleAuthTokenRepository,
+    { provide: TRANSACTION_MANAGER, useExisting: DrizzleTransactionManager },
     { provide: AUTH_USER_REPOSITORY, useExisting: DrizzleAuthUserRepository },
     {
       provide: AUTH_SESSION_REPOSITORY,
@@ -82,6 +106,12 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     },
     SessionService,
     OneTimeTokenService,
+    SignUpUseCase,
+    ConfirmAccountUseCase,
+    SignInUseCase,
+    SignOutUseCase,
+    ForgotPasswordUseCase,
+    ResetPasswordUseCase,
   ],
   exports: [
     AUTH_USER_REPOSITORY,

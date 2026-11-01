@@ -12,7 +12,10 @@ Skill para criar uma spec refinada a partir de um prompt do usuário, coletando 
 - Quando o usuário diz "crie uma spec para X" ou "escreva uma spec"
 - Quando o usuário descreve uma ideia de feature que precisa ser documentada
 - Quando há uma necessidade que precisa ser estruturada antes de implementar
+- Quando o pedido já chega decomposto pelo `breakdown-specs`
 - Como alternativa ao `feature-concept` quando o usuário quer um documento formal
+
+Se o prompt descreve um módulo com várias features (autenticação, CRUD de várias entidades, painel admin), use `breakdown-specs` antes: uma spec única para tudo vira uma implementação impossível de revisar.
 
 ## Argumentos
 

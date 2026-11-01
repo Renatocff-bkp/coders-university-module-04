@@ -15,8 +15,17 @@ node_modules
 # Testing
 coverage
 
+# Load tests — generated seed (contains test credentials and tokens)
+load-tests/.data/
+
 # Turbo
 .turbo
+
+# Orchestrate-me — worktrees, progresso e auditoria de execuções em lote
+.orchestrate/
+
+# Refactor-vertical-slices — auditoria local, plano e QA da refatoração
+.refactor/
 
 # Vercel
 .vercel

@@ -1,8 +1,31 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { Button } from "@repo/ui";
+
+import { signOut } from "../modules/auth/api/sign-out";
 import { useAuth } from "../modules/auth/AuthProvider";
 
 export default function HomePlaceholder() {
-  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { user, token, clearToken } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const firstName = user?.firstName ?? "there";
+
+  const handleSignOut = async (): Promise<void> => {
+    setIsSigningOut(true);
+
+    try {
+      if (token) {
+        await signOut(token);
+      }
+    } catch {
+      // The local session is cleared even if the revocation request fails.
+    } finally {
+      clearToken();
+      navigate("/auth/sign-in", { replace: true });
+    }
+  };
 
   return (
     <main className="min-h-dvh bg-linen text-foreground">
@@ -18,6 +41,16 @@ export default function HomePlaceholder() {
             Home placeholder — the authenticated area is on its way.
           </p>
         </header>
+        <div>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleSignOut}
+            disabled={isSigningOut}
+          >
+            {isSigningOut ? "Signing out..." : "Sign out"}
+          </Button>
+        </div>
       </div>
     </main>
   );

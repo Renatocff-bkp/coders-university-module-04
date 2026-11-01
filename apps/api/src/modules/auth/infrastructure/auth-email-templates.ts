@@ -37,6 +37,18 @@ function escapeHtml(value: string): string {
   return escaped;
 }
 
+const USER_AGENT_MAX_LENGTH = 120;
+
+function summarizeUserAgent(userAgent: string | null | undefined): string {
+  if (!userAgent) {
+    return "unknown device";
+  }
+
+  return userAgent.length > USER_AGENT_MAX_LENGTH
+    ? `${userAgent.slice(0, USER_AGENT_MAX_LENGTH)}...`
+    : userAgent;
+}
+
 function renderHtml(content: EmailContent): string {
   const paragraphs = content.intro.map((text) => `<p>${text}</p>`).join("");
   const action = content.action
@@ -68,7 +80,7 @@ export function renderAuthEmail(
           ],
           action: {
             label: "Confirm account",
-            url: `${options.appUrl}/auth/confirm?token=${token}`,
+            url: `${options.appUrl}/auth/confirm-account?token=${token}`,
           },
           footnote:
             "If you did not create an account, you can safely ignore this email.",
@@ -78,8 +90,6 @@ export function renderAuthEmail(
     }
 
     case "new_session": {
-      const sessionId = email.sessionId ?? "";
-
       return {
         to: email.to,
         subject: "New session started",
@@ -87,8 +97,9 @@ export function renderAuthEmail(
           subject: "New session started",
           intro: [
             "A new session was started on your account. If this was not you, revoke it from your account settings.",
+            `Date and time: ${email.createdAt?.toISOString() ?? "unknown"}`,
+            `Device: ${escapeHtml(summarizeUserAgent(email.userAgent))}`,
           ],
-          footnote: `Session identifier: ${sessionId}`,
         }),
       };
     }
