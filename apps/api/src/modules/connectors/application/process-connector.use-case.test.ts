@@ -18,7 +18,19 @@ describe("ProcessConnectorUseCase", () => {
       }),
       updateStatus: vi.fn().mockResolvedValue(undefined),
     } as any;
-    const uc = new ProcessConnectorUseCase(repo);
+    const textExtractor = { extract: vi.fn().mockResolvedValue("hello world") };
+    const chunker = {
+      chunk: vi.fn().mockResolvedValue([{ pageContent: "hello world" }]),
+    };
+    const vectorStore = { store: vi.fn().mockResolvedValue(undefined) };
+    const env = { getOpenAiApiKey: vi.fn().mockReturnValue(undefined) };
+    const uc = new ProcessConnectorUseCase(
+      repo,
+      textExtractor as any,
+      chunker as any,
+      vectorStore as any,
+      env as any,
+    );
     await uc.execute({ connectorId: "c1", userId: "u1" });
     expect(repo.updateStatus).toHaveBeenCalledWith("c1", "processing");
     expect(repo.updateStatus).toHaveBeenCalledWith("c1", "ready");
@@ -39,7 +51,17 @@ describe("ProcessConnectorUseCase", () => {
       }),
       updateStatus: vi.fn().mockResolvedValue(undefined),
     } as any;
-    const uc = new ProcessConnectorUseCase(repo);
+    const textExtractor = { extract: vi.fn().mockResolvedValue("") };
+    const chunker = { chunk: vi.fn().mockResolvedValue([]) };
+    const vectorStore = { store: vi.fn().mockResolvedValue(undefined) };
+    const env = { getOpenAiApiKey: vi.fn().mockReturnValue(undefined) };
+    const uc = new ProcessConnectorUseCase(
+      repo,
+      textExtractor as any,
+      chunker as any,
+      vectorStore as any,
+      env as any,
+    );
     await uc.execute({ connectorId: "c2", userId: "u1" });
     // either ready or failed depending on fetch; ensure processing called
     expect(repo.updateStatus).toHaveBeenCalledWith("c2", "processing");

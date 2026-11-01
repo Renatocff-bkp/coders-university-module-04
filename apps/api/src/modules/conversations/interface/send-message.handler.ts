@@ -1,68 +1,31 @@
 import {
   Body,
   Controller,
-  Get,
   Param,
   Post,
-  Query,
   Req,
   Res,
   UseGuards,
 } from "@nestjs/common";
 import type { Response } from "express";
 import type { RequestWithContext } from "../../../shared/http/request-context";
-import { AuthGuard } from "../../auth/interface/auth-guard";
-import { ConversationRepository } from "../infrastructure/conversation.repository";
+import { AuthGuard } from "../../auth";
 import { ChatUseCase } from "../application/chat.use-case";
 
 @Controller("conversations")
-export class ConversationsHandler {
-  constructor(
-    private readonly repo: ConversationRepository,
-    private readonly chat: ChatUseCase,
-  ) {}
-
-  @Post()
-  @UseGuards(AuthGuard)
-  async create(
-    @Req() request: RequestWithContext,
-    @Body() body: { expertKey: string; title?: string },
-  ) {
-    const userId = request.user?.id ?? "";
-    return this.repo.create({
-      userId,
-      expertKey: body.expertKey,
-      title: body.title,
-    });
-  }
-
-  @Get()
-  @UseGuards(AuthGuard)
-  async list(
-    @Req() request: RequestWithContext,
-    @Query("expertKey") expertKey?: string,
-  ) {
-    const userId = request.user?.id ?? "";
-    return this.repo.listByUser(userId, expertKey);
-  }
-
-  @Get(":id/messages")
-  @UseGuards(AuthGuard)
-  async messages(@Param("id") id: string) {
-    return this.repo.listMessages(id);
-  }
+export class SendMessageHandler {
+  constructor(private readonly chat: ChatUseCase) {}
 
   @Post(":id/messages")
   @UseGuards(AuthGuard)
-  async sendMessage(
+  async execute(
     @Param("id") id: string,
     @Req() request: RequestWithContext,
-    @Body() body: { content: string; expertKey: string },
+    @Body() body: { content: string; expertKey?: string },
     @Res() res: Response,
   ) {
     const userId = request.user?.id ?? "";
-    const conversation = await this.repo.findById(id);
-    const expertKey = body.expertKey || conversation?.expertKey || "";
+    const expertKey = body.expertKey ?? "";
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");

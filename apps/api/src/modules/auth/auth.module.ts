@@ -3,6 +3,7 @@ import { createTransport } from "nodemailer";
 
 import { DatabaseModule } from "../../shared/database/database.module";
 import { getServerEnv } from "../../shared/config/env";
+import { AuthGuard } from "./interface/auth-guard";
 import { AuthSessionHandler } from "./interface/auth-session.handler";
 import { ConfirmAccountHandler } from "./interface/confirm-account.handler";
 import { ForgotPasswordHandler } from "./interface/forgot-password.handler";
@@ -114,8 +115,10 @@ import { ResendEmailService } from "./infrastructure/resend-email.service";
     SignOutUseCase,
     ForgotPasswordUseCase,
     ResetPasswordUseCase,
+    AuthGuard,
   ],
   exports: [
+    AuthGuard,
     AUTH_USER_REPOSITORY,
     AUTH_SESSION_REPOSITORY,
     AUTH_TOKEN_REPOSITORY,

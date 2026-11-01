@@ -7,8 +7,10 @@ import {
 } from "../../../shared/database/database.module";
 import { mediaAssets } from "../../../shared/database/schema";
 
+import type { MediaRepository as MediaRepositoryPort } from "../domain/media-repository";
+
 @Injectable()
-export class MediaRepository {
+export class MediaRepository implements MediaRepositoryPort {
   constructor(@Inject(DATABASE) private readonly db: Database) {}
 
   async create(input: {

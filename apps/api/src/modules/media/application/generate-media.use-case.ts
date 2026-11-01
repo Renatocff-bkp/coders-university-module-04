@@ -1,38 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { getServerEnv } from "../../../shared/config/env";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { MediaRepository } from "../infrastructure/media.repository";
+import { MEDIA_REPOSITORY, IMAGE_GENERATOR } from "../media.tokens";
+import type { MediaRepository } from "../domain/media-repository";
+import type { ImageGenerator } from "../domain/image-generator";
 
 @Injectable()
 export class GenerateMediaUseCase {
-  constructor(private readonly repo: MediaRepository) {}
+  constructor(
+    @Inject(MEDIA_REPOSITORY) private readonly repo: MediaRepository,
+    @Inject(IMAGE_GENERATOR) private readonly imageGenerator: ImageGenerator,
+  ) {}
 
   async generateImage(input: { userId: string; prompt: string }) {
-    const env = getServerEnv();
-    if (!env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not configured");
-    const res = await fetch("https://api.openai.com/v1/images/generations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-image-2",
-        prompt: input.prompt,
-        size: "1024x1024",
-        n: 1,
-      }),
+    const { b64, url } = await this.imageGenerator.generate({
+      prompt: input.prompt,
     });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Image generation failed: ${res.status} ${text}`);
-    }
-    const json = (await res.json()) as {
-      data?: { b64_json?: string; url?: string }[];
-    };
-    const item = json.data?.[0];
-    const b64 = item?.b64_json ?? null;
-    const url = item?.url ?? null;
     const asset = await this.repo.create({
       userId: input.userId,
       type: "image",
@@ -43,6 +25,17 @@ export class GenerateMediaUseCase {
       model: "gpt-image-2",
     });
     return asset;
+  }
+
+  async execute(input: {
+    userId: string;
+    type: "image" | "video";
+    prompt: string;
+  }) {
+    if (input.type === "image") {
+      return this.generateImage({ userId: input.userId, prompt: input.prompt });
+    }
+    return this.generateVideo({ userId: input.userId, prompt: input.prompt });
   }
 
   async generateVideo(input: { userId: string; prompt: string }) {

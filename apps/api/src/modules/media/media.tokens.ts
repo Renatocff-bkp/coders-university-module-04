@@ -1,0 +1,2 @@
+export const MEDIA_REPOSITORY = Symbol("MEDIA_REPOSITORY");
+export const IMAGE_GENERATOR = Symbol("IMAGE_GENERATOR");

@@ -1,9 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 
-import { getChatModel, getEmbeddings } from "../../../shared/ai/models";
-import { getWeaviateClient } from "../../../shared/ai/weaviate.client";
-import { ConversationRepository } from "../infrastructure/conversation.repository";
-import { findExpert } from "../../agents/domain/expert";
+import {
+  CONVERSATION_REPOSITORY,
+  CHAT_MODEL,
+  VECTOR_STORE,
+} from "../conversations.tokens";
+import type { ConversationRepository } from "../domain/conversation-repository";
+import type { ChatModel } from "../domain/chat-model";
+import type { VectorStore } from "../domain/vector-store";
+import { ExpertCatalogService } from "../../agents";
 
 export interface ChatStreamInput {
   conversationId: string;
@@ -17,10 +22,22 @@ export interface ChatStreamInput {
 
 @Injectable()
 export class ChatUseCase {
-  constructor(private readonly repo: ConversationRepository) {}
+  constructor(
+    @Inject(CONVERSATION_REPOSITORY)
+    private readonly repo: ConversationRepository,
+    private readonly experts: ExpertCatalogService,
+    @Inject(CHAT_MODEL) private readonly chatModel: ChatModel,
+    @Inject(VECTOR_STORE) private readonly vectorStore: VectorStore,
+  ) {}
 
   async execute(input: ChatStreamInput): Promise<void> {
-    const expert = findExpert(input.expertKey);
+    let expertKey = input.expertKey;
+    if (!expertKey) {
+      const conversation = await this.repo.findById(input.conversationId);
+      expertKey = (conversation?.expertKey as string) ?? "";
+    }
+
+    const expert = this.experts.find(expertKey);
     if (!expert) {
       input.onError(new Error("Unknown expert"));
       return;
@@ -34,31 +51,11 @@ export class ChatUseCase {
     });
 
     // RAG retrieval (best-effort)
-    let context = "";
-    try {
-      const { WeaviateStore } = await import("@langchain/weaviate");
-      const embeddings = getEmbeddings();
-      const client = await getWeaviateClient();
-      const store = new WeaviateStore(embeddings, {
-        client,
-        indexName: "ConnectorChunk",
-        textKey: "text",
-        metadataKeys: ["userId", "connectorId", "sourceName", "chunkIndex"],
-      });
-      const results = await store.similaritySearch(input.content, 8);
-      const filtered = results
-        .filter((r) => r.metadata?.userId === input.userId)
-        .slice(0, 4);
-      if (filtered.length > 0) {
-        context =
-          "\n\nRelevant context from connected data:\n" +
-          filtered.map((r) => `- ${r.pageContent}`).join("\n");
-      }
-    } catch {
-      // ignore retrieval errors
-    }
+    const context = await this.vectorStore.retrieveContext(
+      input.content,
+      input.userId,
+    );
 
-    const model = getChatModel();
     const messages = [
       { role: "system", content: expert.systemPrompt + context },
       { role: "user", content: input.content },
@@ -66,9 +63,8 @@ export class ChatUseCase {
 
     let fullText = "";
     try {
-      const stream = await model.stream(messages as never);
-      for await (const chunk of stream) {
-        const token = typeof chunk.content === "string" ? chunk.content : "";
+      const stream = await this.chatModel.stream(messages);
+      for await (const token of stream) {
         if (token) {
           fullText += token;
           input.onToken(token);
