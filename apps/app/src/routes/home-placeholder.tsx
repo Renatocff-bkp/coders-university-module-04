@@ -82,13 +82,14 @@ export default function HomePlaceholder() {
         if (res.ok) {
           const data = (await res.json()) as Expert[];
           setExperts(data);
-          if (data.length > 0) setSelectedExpert(data[0].key);
+          if (data.length > 0 && !selectedExpert)
+            setSelectedExpert(data[0].key);
         }
       } catch {
         // ignore
       }
     })();
-  }, []);
+  }, [selectedExpert]);
 
   useEffect(() => {
     if (!selectedExpert) return;
@@ -216,7 +217,7 @@ export default function HomePlaceholder() {
                 setMessages((prev) =>
                   prev.map((m) =>
                     m.id === assistantId
-                      ? { ...m, content: m.content + parsed.content! }
+                      ? { ...m, content: m.content + parsed.content }
                       : m,
                   ),
                 );
@@ -234,7 +235,7 @@ export default function HomePlaceholder() {
             }
           }
         }
-      } catch (err) {
+      } catch {
         setMessages((prev) =>
           prev.map((m) =>
             m.id === assistantId
@@ -275,7 +276,6 @@ export default function HomePlaceholder() {
       if (!res.ok) throw new Error("Upload failed");
       const data = (await res.json()) as ConnectorStatus;
       setUploadStatus(`Submitted: ${data.id} (${data.status})`);
-      // poll status
       const poll = async () => {
         const r = await authFetch(`/api/v1/connectors/${data.id}`);
         if (r.ok) {
@@ -295,11 +295,21 @@ export default function HomePlaceholder() {
   };
 
   return (
-    <main className="flex min-h-dvh flex-col bg-background text-foreground">
+    <div className="flex min-h-dvh flex-col bg-background text-foreground">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+      >
+        Skip to main content
+      </a>
+
       <header className="border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-2">
-            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <span
+              className="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm"
+              aria-hidden="true"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -313,27 +323,35 @@ export default function HomePlaceholder() {
                 <path d="M12 2l3 6 6 1-4.5 4 1 6-5.5-3-5.5 3 1-6L3 9l6-1 3-6z" />
               </svg>
             </span>
-            <span className="text-sm font-semibold tracking-tight">
+            <span
+              className="text-sm font-semibold tracking-tight"
+              translate="no"
+            >
               Coders University
             </span>
           </div>
+
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={handleSignOut}
+            className="focus-visible:ring-2 focus-visible:ring-ring"
           >
             Sign out
           </Button>
         </div>
       </header>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6">
+      <main
+        id="main-content"
+        className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-6 sm:px-6"
+      >
         <section className="mb-4">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-balance text-2xl font-semibold tracking-tight">
             Welcome back, {firstName}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Choose an expert and start a conversation.
           </p>
         </section>
@@ -341,8 +359,9 @@ export default function HomePlaceholder() {
         <Card className="flex flex-1 flex-col border-border/60 shadow-sm">
           <CardContent className="flex flex-1 flex-col gap-4 p-4">
             <div
-              className="flex-1 space-y-3 overflow-y-auto"
+              className="flex-1 space-y-3 overflow-y-auto break-words"
               aria-live="polite"
+              aria-label="Chat messages"
             >
               {messages.length === 0 && (
                 <p className="text-sm text-muted-foreground">
@@ -357,12 +376,12 @@ export default function HomePlaceholder() {
                   <div
                     className={
                       m.role === "user"
-                        ? "inline-block rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground"
-                        : "inline-block rounded-lg bg-muted px-3 py-2 text-sm text-foreground"
+                        ? "inline-block max-w-[80%] rounded-lg bg-primary px-3 py-2 text-sm text-primary-foreground"
+                        : "inline-block max-w-[80%] rounded-lg bg-muted px-3 py-2 text-sm text-foreground"
                     }
                   >
                     {m.content ||
-                      (isStreaming && m.role === "assistant" ? "..." : "")}
+                      (isStreaming && m.role === "assistant" ? "…" : "")}
                   </div>
                 </div>
               ))}
@@ -370,7 +389,10 @@ export default function HomePlaceholder() {
             </div>
 
             {suggestions.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div
+                className="flex flex-wrap gap-2"
+                aria-label="Suggested prompts"
+              >
                 {suggestions.map((s) => (
                   <Button
                     key={s}
@@ -379,6 +401,7 @@ export default function HomePlaceholder() {
                     size="sm"
                     onClick={() => void sendMessage(s)}
                     disabled={isStreaming}
+                    className="focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {s}
                   </Button>
@@ -387,15 +410,17 @@ export default function HomePlaceholder() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </main>
 
-      {/* Footer bar */}
       <footer className="sticky bottom-0 border-t border-border/60 bg-background/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-6xl items-end gap-2 px-4 py-3 sm:px-6">
-          <div className="w-48">
+          <div className="w-48 min-w-0">
             <Select value={selectedExpert} onValueChange={setSelectedExpert}>
-              <SelectTrigger aria-label="Expert">
-                <SelectValue placeholder="Expert" />
+              <SelectTrigger
+                aria-label="Select expert"
+                className="focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <SelectValue placeholder="Expert…" />
               </SelectTrigger>
               <SelectContent>
                 {experts.map((e) => (
@@ -407,8 +432,11 @@ export default function HomePlaceholder() {
             </Select>
           </div>
           <textarea
-            className="min-h-[44px] flex-1 resize-none rounded-md border border-input bg-background px-3 py-2 text-sm"
-            placeholder="Ask the expert..."
+            name="prompt"
+            autoComplete="off"
+            spellCheck={false}
+            className="min-h-[44px] min-w-0 flex-1 resize-none rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            placeholder="Ask the expert…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
@@ -423,14 +451,16 @@ export default function HomePlaceholder() {
             type="button"
             onClick={() => void sendMessage(input)}
             disabled={isStreaming || !input.trim()}
+            className="focus-visible:ring-2 focus-visible:ring-ring"
           >
-            Send
+            {isStreaming ? "Sending…" : "Send"}
           </Button>
           <Button
             type="button"
             variant="outline"
             onClick={() => setUploadOpen(true)}
             aria-label="Add connection"
+            className="focus-visible:ring-2 focus-visible:ring-ring"
           >
             +
           </Button>
@@ -438,37 +468,57 @@ export default function HomePlaceholder() {
       </footer>
 
       <Dialog open={uploadOpen} onOpenChange={setUploadOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add connection</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
+            <label className="block text-sm font-medium" htmlFor="file-input">
+              Upload a file
+            </label>
             <input
+              id="file-input"
               type="file"
               onChange={(e) => setUploadFile(e.target.files?.[0] ?? null)}
               accept=".pdf,.txt,.md,.jpg,.jpeg,.png,.mp4,.mp3"
+              className="block w-full text-sm"
             />
-            <div className="text-center text-xs text-muted-foreground">or</div>
+            <div
+              className="text-center text-xs text-muted-foreground"
+              aria-hidden="true"
+            >
+              or
+            </div>
+            <label className="block text-sm font-medium" htmlFor="url-input">
+              Add a URL
+            </label>
             <input
+              id="url-input"
               type="url"
+              inputMode="url"
+              autoComplete="off"
+              spellCheck={false}
               placeholder="https://example.com"
               value={uploadUrl}
               onChange={(e) => setUploadUrl(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
             <Button
               type="button"
               onClick={() => void handleUpload()}
               disabled={isUploading}
+              className="w-full focus-visible:ring-2 focus-visible:ring-ring"
             >
-              {isUploading ? "Uploading..." : "Submit"}
+              {isUploading ? "Uploading…" : "Submit"}
             </Button>
             {uploadStatus && (
-              <p className="text-xs text-muted-foreground">{uploadStatus}</p>
+              <p className="text-xs text-muted-foreground" aria-live="polite">
+                {uploadStatus}
+              </p>
             )}
           </div>
         </DialogContent>
       </Dialog>
-    </main>
+    </div>
   );
 }
